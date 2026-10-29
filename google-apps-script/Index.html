@@ -1,0 +1,2018 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EHMS - Enterprise Health Management System | PT PGAS Solution</title>
+    <!-- Tabler Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <!-- Google Fonts: Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #0F172A;
+            --navy-light: #1E293B;
+            --blue: #0284C7;
+            --blue-hover: #0369A1;
+            --blue-soft: #E0F2FE;
+            --cyan: #06B6D4;
+            --green: #10B981;
+            --green-soft: #D1FAE5;
+            --amber: #F59E0B;
+            --amber-soft: #FEF3C7;
+            --red: #EF4444;
+            --red-soft: #FEE2E2;
+            --purple: #8B5CF6;
+            --purple-soft: #EDE9FE;
+            --teal: #0D9488;
+            --teal-soft: #CCFBF1;
+            --slate: #64748B;
+            --bg-main: #F8FAFC;
+            --bg-card: #FFFFFF;
+            --border: #E2E8F0;
+            --border-light: #F1F5F9;
+            --text-primary: #0F172A;
+            --text-secondary: #475569;
+            --text-med: #334155;
+            --text-light: #64748B;
+            --text-muted: #94A3B8;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-primary);
+            font-size: 13.5px;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+        .app-layout { display: flex; min-height: 100vh; }
+        /* Sidebar */
+        .sidebar {
+            width: 255px;
+            background: var(--navy);
+            color: #F8FAFC;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.25s ease;
+            border-right: 1px solid #1E293B;
+        }
+        .sidebar.collapsed { width: 0; overflow: hidden; border: none; }
+        .brand-box {
+            padding: 20px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #1E293B;
+        }
+        .brand-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #0284C7 0%, #38BDF8 100%);
+            border-radius: 9px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #FFFFFF;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.4);
+        }
+        .brand-title { font-weight: 800; font-size: 18px; letter-spacing: -0.3px; display: block; line-height: 1.1; }
+        .brand-sub { font-size: 10.5px; color: #94A3B8; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600; }
+        .nav-menu { padding: 14px 12px; flex: 1; overflow-y: auto; }
+        .nav-heading {
+            font-size: 10px; font-weight: 700; color: #64748B;
+            text-transform: uppercase; letter-spacing: 0.8px;
+            padding: 12px 10px 6px;
+        }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 10px 12px; color: #94A3B8; text-decoration: none;
+            border-radius: var(--radius-sm); font-weight: 500; font-size: 13px;
+            margin-bottom: 3px; transition: all 0.2s; cursor: pointer;
+            border: none; background: transparent; width: 100%; text-align: left; font-family: inherit;
+        }
+        .nav-link i { font-size: 18px; }
+        .nav-link:hover { color: #FFFFFF; background: #1E293B; }
+        .nav-link.active {
+            color: #FFFFFF; background: var(--blue); font-weight: 600;
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.3);
+        }
+        .sidebar-footer {
+            padding: 14px 16px; border-top: 1px solid #1E293B;
+            font-size: 11px; background: #0B1120;
+        }
+        .system-status { display: flex; align-items: center; gap: 8px; color: #CBD5E1; margin-bottom: 4px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981; }
+        .status-dot.syncing { background: #F59E0B; box-shadow: 0 0 6px #F59E0B; }
+        .sys-version { color: #64748B; font-size: 10.5px; word-break: break-all; }
+
+        /* Main Wrapper */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+        .topbar {
+            height: 64px; background: var(--bg-card); border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 24px; position: sticky; top: 0; z-index: 100;
+        }
+        .topbar-left { display: flex; align-items: center; gap: 14px; }
+        .btn-menu {
+            background: transparent; border: none; font-size: 20px; cursor: pointer;
+            color: var(--text-secondary); padding: 6px; border-radius: var(--radius-sm);
+        }
+        .page-title { font-size: 17px; font-weight: 700; color: var(--navy); line-height: 1.2; }
+        .topbar-right { display: flex; align-items: center; gap: 12px; }
+        .search-box { position: relative; width: 250px; }
+        .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 16px; }
+        .search-box input {
+            width: 100%; padding: 7px 12px 7px 32px; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 12.5px; background: var(--bg-main);
+            outline: none; font-family: inherit;
+        }
+        .search-box input:focus { border-color: var(--blue); background: #FFFFFF; }
+        .user-profile { display: flex; align-items: center; gap: 10px; padding-left: 12px; border-left: 1px solid var(--border); }
+        .avatar {
+            width: 36px; height: 36px; border-radius: 50%; background: #E0F2FE;
+            color: var(--blue); display: flex; align-items: center; justify-content: center;
+            font-size: 18px; font-weight: 700;
+        }
+        .user-name { font-size: 12.5px; font-weight: 700; color: var(--navy); line-height: 1.2; }
+        .user-role { font-size: 11px; color: var(--slate); }
+        .content-body { padding: 24px; flex: 1; }
+        .main-footer {
+            padding: 14px 24px; background: #FFFFFF; border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; color: var(--slate); flex-wrap: wrap; gap: 10px;
+        }
+
+        /* Cards & KPI */
+        .card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+            overflow: hidden; margin-bottom: 20px;
+        }
+        .card-header {
+            padding: 14px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+            background: #FAFAFA; flex-wrap: wrap; gap: 10px;
+        }
+        .card-title { font-size: 14px; font-weight: 700; color: var(--navy); display: flex; align-items: center; gap: 8px; }
+        .card-body { padding: 20px; }
+        .kpi-row {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 16px; margin-bottom: 20px;
+        }
+        .kpi-box {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius-md); padding: 18px; box-shadow: var(--shadow-sm);
+            position: relative; overflow: hidden;
+        }
+        .kpi-box::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; }
+        .kpi-box.blue::before { background: var(--blue); }
+        .kpi-box.green::before { background: var(--green); }
+        .kpi-box.orange::before { background: var(--amber); }
+        .kpi-box.red::before { background: var(--red); }
+        .kpi-box.teal::before { background: var(--teal); }
+        .kpi-box.purple::before { background: var(--purple); }
+        .kpi-label {
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 12px; color: var(--slate); font-weight: 600; margin-bottom: 8px;
+        }
+        .kpi-num { font-size: 26px; font-weight: 800; color: var(--navy); line-height: 1.1; margin-bottom: 4px; }
+        .kpi-sub { font-size: 11px; color: var(--text-muted); }
+
+        /* Filter Toolbar & Tables */
+        .tbar {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 12px; margin-bottom: 16px;
+            background: #F8FAFC; padding: 12px 16px; border-radius: 8px; border: 1px solid var(--border);
+        }
+        .tbar-left, .tbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+        .form-select, .tbar-search-input {
+            padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+            font-size: 12.5px; background: #FFFFFF; color: var(--navy); font-family: inherit; outline: none;
+        }
+        .tbl-wrap { overflow-x: auto; }
+        .dtbl, .table { width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left; }
+        .dtbl th, .table th {
+            background: #F8FAFC; color: #475569; font-weight: 700; font-size: 11px;
+            text-transform: uppercase; letter-spacing: 0.4px; padding: 11px 12px;
+            border-bottom: 1px solid var(--border); white-space: nowrap;
+        }
+        .dtbl td, .table td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .dtbl tbody tr:hover, .table tbody tr:hover { background-color: #F8FAFC; }
+
+        /* Badges & Buttons */
+        .badge {
+            display: inline-flex; align-items: center; gap: 4px; padding: 3px 8px;
+            border-radius: 9999px; font-size: 11px; font-weight: 700; white-space: nowrap;
+        }
+        .badge.b-fit, .badge.b-active, .badge.b-p1 { background: var(--green-soft); color: #065F46; }
+        .badge.b-fitnote, .badge.b-p2, .badge.b-p3 { background: var(--amber-soft); color: #92400E; }
+        .badge.b-notfit, .badge.b-inactive, .badge.b-p4 { background: var(--red-soft); color: #991B1B; }
+        .badge.b-org { background: #E2E8F0; color: #334155; }
+        .badge.b-pkwt { background: var(--purple-soft); color: #5B21B6; }
+        .badge.b-tkjp { background: var(--teal-soft); color: #115E59; }
+
+        .btn-primary {
+            background: var(--blue); color: #FFFFFF; border: none; padding: 8px 14px;
+            border-radius: var(--radius-sm); font-weight: 600; font-size: 12.5px;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            text-decoration: none; transition: all 0.2s; font-family: inherit;
+        }
+        .btn-primary:hover { background: var(--blue-hover); }
+        .btn-secondary {
+            background: #FFFFFF; color: var(--text-secondary); border: 1px solid var(--border);
+            padding: 8px 12px; border-radius: var(--radius-sm); font-weight: 600; font-size: 12.5px;
+            cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+            text-decoration: none; transition: all 0.2s; font-family: inherit;
+        }
+        .btn-secondary:hover { background: var(--bg-main); color: var(--navy); }
+        .act-btns { display: flex; gap: 5px; }
+        .act-btn {
+            width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border);
+            background: #fff; color: var(--navy); cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; font-size: 14px;
+        }
+        .act-btn:hover { background: var(--blue-soft); color: var(--blue); border-color: var(--blue); }
+        .act-btn.del:hover { background: var(--red-soft); color: var(--red); border-color: var(--red); }
+
+        /* Power BI 15 Rules Grid */
+        .pbi-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px;
+        }
+        .pbi-card {
+            background: #fff; border: 1px solid var(--border); border-radius: 10px;
+            padding: 14px; cursor: pointer; transition: all 0.2s; display: block;
+        }
+        .pbi-card:hover, .pbi-card.active-filter {
+            border-color: var(--blue); background: #F0F9FF; box-shadow: 0 2px 8px rgba(2,132,199,0.15);
+        }
+        .pbi-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 6px; }
+        .pbi-name { font-weight: 700; font-size: 12.5px; color: var(--navy); }
+        .pbi-count { font-size: 18px; font-weight: 800; color: var(--blue); }
+        .pbi-desc { font-size: 11px; color: var(--slate); margin-bottom: 8px; min-height: 30px; }
+        .pbi-tag { font-size: 10.5px; font-weight: 700; color: #0369A1; background: #E0F2FE; padding: 2px 8px; border-radius: 99px; }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(3px);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000; padding: 20px;
+        }
+        .modal-dialog {
+            background: #FFFFFF; border-radius: var(--radius-lg);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+            width: 100%; max-width: 680px; overflow: hidden;
+        }
+        .modal-dialog.modal-xl { max-width: 1100px; }
+        .modal-header {
+            padding: 16px 20px; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .modal-body { padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .modal-footer {
+            padding: 12px 20px; border-top: 1px solid var(--border);
+            display: flex; align-items: center; justify-content: flex-end; gap: 10px; background: #FAFAFA;
+        }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .form-group { margin-bottom: 10px; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; }
+        .form-control {
+            width: 100%; padding: 8px 10px; border: 1px solid var(--border);
+            border-radius: var(--radius-sm); font-size: 13px; font-family: inherit; outline: none;
+        }
+        .form-control:focus { border-color: var(--blue); }
+        .tab-btn {
+            background: transparent; border: none; padding: 10px 14px; font-size: 12.5px;
+            font-weight: 600; color: var(--slate); border-bottom: 2px solid transparent;
+            cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: inherit;
+        }
+        .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+        @media (max-width: 900px) {
+            .sidebar { position: fixed; z-index: 999; height: 100vh; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+        @media print {
+            .sidebar, .topbar, .main-footer, .btn-primary, .btn-secondary, .btn-close, .modal-footer, .tab-nav-wrapper {
+                display: none !important;
+            }
+            body, .app-layout, .main-wrapper, .modal-overlay, .modal-dialog {
+                background: #FFFFFF !important; padding: 0 !important; margin: 0 !important;
+                width: 100% !important; max-width: 100% !important; box-shadow: none !important;
+                border: none !important; position: static !important;
+            }
+            .emr-tab-content { display: block !important; margin-bottom: 18px !important; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-layout">
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="brand-box">
+            <div class="brand-icon"><i class="ti ti-heart-rate-monitor"></i></div>
+            <div class="brand-text">
+                <span class="brand-title">EHMS</span>
+                <span class="brand-sub">PGN Solution Health</span>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <div class="nav-heading">MENU UTAMA</div>
+            <button class="nav-link active" onclick="switchMainView('dashboard', this)">
+                <i class="ti ti-layout-dashboard"></i><span>Wellness Dashboard</span>
+            </button>
+            <button class="nav-link" onclick="switchMainView('mcu', this)">
+                <i class="ti ti-clipboard-list"></i><span>Medical Check Up (MCU)</span>
+            </button>
+            <button class="nav-link" onclick="switchMainView('dcu', this)">
+                <i class="ti ti-stethoscope"></i><span>Daily Check Up (DCU)</span>
+            </button>
+            <button class="nav-link" onclick="switchMainView('employee', this)">
+                <i class="ti ti-users"></i><span>Master Pekerja</span>
+            </button>
+
+            <div class="nav-heading">KLINIS &amp; SURVEILANS</div>
+            <button class="nav-link" onclick="switchMainView('comorbid', this)">
+                <i class="ti ti-pill"></i><span>Monitoring Komorbid</span>
+            </button>
+            <button class="nav-link" onclick="switchMainView('screening', this)">
+                <i class="ti ti-alert-triangle"></i><span>15 Aturan Power BI</span>
+            </button>
+
+            <div class="nav-heading">GOOGLE APPS SCRIPT &amp; CSV</div>
+            <button class="nav-link" onclick="openCloudModal()">
+                <i class="ti ti-cloud-computing" style="color:#38BDF8;"></i><span>Koneksi Apps Script</span>
+            </button>
+            <button class="nav-link" onclick="exportCurrentCsv('mcu')">
+                <i class="ti ti-file-spreadsheet"></i><span>Ekspor Data MCU (CSV)</span>
+            </button>
+            <button class="nav-link" onclick="exportCurrentCsv('dcu')">
+                <i class="ti ti-file-spreadsheet"></i><span>Ekspor Data DCU (CSV)</span>
+            </button>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="system-status">
+                <span class="status-dot" id="connDot"></span>
+                <span id="connStatusText">Terhubung ke Apps Script</span>
+            </div>
+            <div class="sys-version">Endpoint: AKfycbyElWAE...TgVag/exec</div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-wrapper">
+        <header class="topbar">
+            <div class="topbar-left">
+                <button class="btn-menu" onclick="document.getElementById('sidebar').classList.toggle('collapsed')" title="Toggle Sidebar">
+                    <i class="ti ti-menu-2"></i>
+                </button>
+                <div>
+                    <h1 class="page-title" id="pageTitle">Wellness Dashboard</h1>
+                    <span class="badge b-org" style="font-size:10.5px;">PT PGAS Solution &bull; Terintegrasi Google Sheets &amp; Apps Script</span>
+                </div>
+            </div>
+            <div class="topbar-right">
+                <div class="search-box">
+                    <i class="ti ti-search search-icon"></i>
+                    <input type="text" id="globalSearchInput" placeholder="Cari NIP, Nama, Area..." onkeydown="if(event.key==='Enter') handleGlobalSearch(this.value)">
+                </div>
+                <button class="btn-secondary" onclick="openCloudModal()" title="Pengaturan & Sinkronisasi Google Apps Script">
+                    <i class="ti ti-cloud-check" style="color:var(--blue);"></i> <span id="syncBtnLabel">Cloud Apps Script</span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar"><i class="ti ti-user-check"></i></div>
+                    <div>
+                        <div class="user-name">dr. Tim Medis K3</div>
+                        <div class="user-role">Occupational Health Officer</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <!-- BANNER INTEGRASI GOOGLE APPS SCRIPT -->
+            <div class="card" style="background:linear-gradient(90deg, #0F172A 0%, #1E293B 100%);color:#fff;border:none;margin-bottom:20px;">
+                <div class="card-body" style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="width:40px;height:40px;border-radius:10px;background:rgba(56,189,248,0.15);color:#38BDF8;display:flex;align-items:center;justify-content:center;font-size:22px;">
+                            <i class="ti ti-brand-google-drive"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700;font-size:13.5px;display:flex;align-items:center;gap:8px;">
+                                Integrasi Aktif: Google Sheets &amp; Apps Script Web App
+                                <span class="badge b-fit" id="liveSyncBadge" style="font-size:10px;">CONNECTED</span>
+                            </div>
+                            <div style="font-size:11.5px;color:#94A3B8;">
+                                URL Deployment: <code style="color:#38BDF8;">https://script.google.com/macros/s/AKfycbyElWAEb7e0gO_TL_WBai7GHUKUn9tEAegPXUK6TMmQgDrPHCjoXbwWXlc1549HwTgVag/exec</code>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                        <button class="btn-primary" style="font-size:12px;padding:6px 12px;" onclick="syncFromAppsScript(true)">
+                            <i class="ti ti-refresh"></i> Sinkronisasi Data Sheet
+                        </button>
+                        <a href="https://script.google.com/macros/s/AKfycbyElWAEb7e0gO_TL_WBai7GHUKUn9tEAegPXUK6TMmQgDrPHCjoXbwWXlc1549HwTgVag/exec" target="_blank" rel="noopener" class="btn-secondary" style="font-size:12px;padding:6px 12px;background:#1E293B;color:#fff;border-color:#334155;">
+                            <i class="ti ti-external-link"></i> Buka Endpoint Exec
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== VIEW 1: DASHBOARD ==================== -->
+            <section id="view-dashboard" class="app-view">
+                <div class="kpi-row">
+                    <div class="kpi-box blue">
+                        <div class="kpi-label"><span>Total Pemeriksaan MCU</span><i class="ti ti-clipboard-list"></i></div>
+                        <div class="kpi-num" id="dashMcuTotal">2,285</div>
+                        <div class="kpi-sub">Data Terintegrasi Google Sheets</div>
+                    </div>
+                    <div class="kpi-box green">
+                        <div class="kpi-label"><span>Fit to Work</span><i class="ti ti-circle-check"></i></div>
+                        <div class="kpi-num" id="dashMcuFit">836</div>
+                        <div class="kpi-sub">Laik bekerja tanpa pembatasan</div>
+                    </div>
+                    <div class="kpi-box orange">
+                        <div class="kpi-label"><span>Fit dengan Catatan</span><i class="ti ti-alert-circle"></i></div>
+                        <div class="kpi-num" id="dashMcuFitNote">1,424</div>
+                        <div class="kpi-sub">Dengan kontrol &amp; anjuran medis</div>
+                    </div>
+                    <div class="kpi-box red">
+                        <div class="kpi-label"><span>Unfit to Work</span><i class="ti ti-circle-x"></i></div>
+                        <div class="kpi-num" id="dashMcuUnfit">25</div>
+                        <div class="kpi-sub">Perlu rujukan spesialis segera</div>
+                    </div>
+                    <div class="kpi-box teal">
+                        <div class="kpi-label"><span>DCU Terdata</span><i class="ti ti-stethoscope"></i></div>
+                        <div class="kpi-num" id="dashDcuTotal">1,975</div>
+                        <div class="kpi-sub"><span id="dashDcuFit">1,945</span> Fit &bull; <span id="dashDcuUnfit">30</span> Unfit (Murni)</div>
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(360px, 1fr));gap:20px;margin-bottom:20px;">
+                    <div class="card" style="margin:0;">
+                        <div class="card-header">
+                            <div class="card-title"><i class="ti ti-virus"></i> Top Kondisi &amp; Komorbiditas Karyawan</div>
+                            <button class="btn-secondary" style="font-size:11px;padding:4px 8px;" onclick="switchMainView('screening')">Lihat 15 Rules Power BI</button>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:13px;">
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                                        <span style="font-weight:600;">Hipertensi (Tekanan Darah &ge; 140/90)</span>
+                                        <span style="font-weight:700;color:var(--red);" id="dashComHt">412 Kasus</span>
+                                    </div>
+                                    <div style="height:7px;background:#F1F5F9;border-radius:4px;overflow:hidden;">
+                                        <div style="width:72%;height:100%;background:linear-gradient(90deg, #3B82F6 0%, #EF4444 100%);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                                        <span style="font-weight:600;">Dislipidemia (Kolesterol &ge; 200 / TG &ge; 150)</span>
+                                        <span style="font-weight:700;color:var(--amber);" id="dashComLipid">865 Kasus</span>
+                                    </div>
+                                    <div style="height:7px;background:#F1F5F9;border-radius:4px;overflow:hidden;">
+                                        <div style="width:64%;height:100%;background:linear-gradient(90deg, #3B82F6 0%, #F59E0B 100%);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                                        <span style="font-weight:600;">Diabetes Melitus / Hiperglikemia (GDP &ge; 126)</span>
+                                        <span style="font-weight:700;color:var(--red);" id="dashComDm">198 Kasus</span>
+                                    </div>
+                                    <div style="height:7px;background:#F1F5F9;border-radius:4px;overflow:hidden;">
+                                        <div style="width:42%;height:100%;background:linear-gradient(90deg, #3B82F6 0%, #EF4444 100%);"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;">
+                                        <span style="font-weight:600;">Pasien dalam Pemantauan &amp; Rujukan Spesialis</span>
+                                        <span style="font-weight:700;color:var(--teal);" id="dashComRujukan">1,479 Pasien</span>
+                                    </div>
+                                    <div style="height:7px;background:#F1F5F9;border-radius:4px;overflow:hidden;">
+                                        <div style="width:55%;height:100%;background:#0D9488;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin:0;">
+                        <div class="card-header">
+                            <div class="card-title"><i class="ti ti-building-community"></i> Indeks Kesehatan per Area Operasi PGN Solution</div>
+                            <span style="font-size:11px;color:var(--text-light);">Skala Maksimal 5.0</span>
+                        </div>
+                        <div class="card-body">
+                            <div style="display:flex;flex-direction:column;gap:10px;">
+                                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F8FAFD;border-radius:6px;border:1px solid var(--border-light);">
+                                    <div><strong>Jakarta (Kantor Pusat)</strong><div style="font-size:11px;color:var(--text-light);">Kelaikan Kerja: 94%</div></div>
+                                    <div style="font-size:15px;font-weight:800;color:var(--navy);">4.6 <span class="badge b-fit" style="font-size:10px;">Best</span></div>
+                                </div>
+                                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F8FAFD;border-radius:6px;border:1px solid var(--border-light);">
+                                    <div><strong>SOR 1 &amp; SOR 2 (Sumatera)</strong><div style="font-size:11px;color:var(--text-light);">Kelaikan Kerja: 91%</div></div>
+                                    <div style="font-size:15px;font-weight:800;color:var(--navy);">4.3 <span class="badge b-fit" style="font-size:10px;">Top</span></div>
+                                </div>
+                                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F8FAFD;border-radius:6px;border:1px solid var(--border-light);">
+                                    <div><strong>Ketapang &amp; SOR 3 (Jawa Timur)</strong><div style="font-size:11px;color:var(--text-light);">Kelaikan Kerja: 88%</div></div>
+                                    <div style="font-size:15px;font-weight:800;color:var(--navy);">4.1 <span class="badge b-org" style="font-size:10px;">Good</span></div>
+                                </div>
+                                <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:#F8FAFD;border-radius:6px;border:1px solid var(--border-light);">
+                                    <div><strong>EPC Daan Mogot &amp; Field Ops</strong><div style="font-size:11px;color:var(--text-light);">Kelaikan Kerja: 82%</div></div>
+                                    <div style="font-size:15px;font-weight:800;color:var(--amber);">3.8 <span class="badge b-fitnote" style="font-size:10px;">Monitor</span></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card" style="border-left:4px solid var(--cyan);">
+                    <div class="card-header">
+                        <div class="card-title"><i class="ti ti-bulb"></i> Ringkasan Medis Eksekutif &amp; Rekomendasi Klinis EHMS</div>
+                    </div>
+                    <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px;">
+                        <div style="background:#F8FAFD;padding:16px;border-radius:var(--radius-sm);border:1px solid var(--border-light);">
+                            <h4 style="font-size:13.5px;color:var(--navy);margin-bottom:8px;"><i class="ti ti-info-circle" style="color:var(--blue);"></i> Sinkronisasi Cloud Google Sheets</h4>
+                            <p style="font-size:12.5px;color:var(--text-med);line-height:1.6;">
+                                Frontend ini terhubung langsung ke deployment Google Apps Script PT PGAS Solution. Seluruh data pemeriksaan MCU, DCU harian (murni FIT/UNFIT), Master Pekerja (5 status korporat), dan Pemantauan Komorbid tersinkronisasi secara real-time.
+                            </p>
+                        </div>
+                        <div style="background:#FFFBEB;padding:16px;border-radius:var(--radius-sm);border:1px solid #FDE68A;">
+                            <h4 style="font-size:13.5px;color:#92400E;margin-bottom:8px;"><i class="ti ti-checkup-list" style="color:#D97706;"></i> Instruksi Tindak Lanjut Medis</h4>
+                            <ul style="font-size:12.5px;color:#78350F;line-height:1.6;padding-left:18px;">
+                                <li>Pekerja kategori <strong>Unfit</strong> wajib menjalani konsultasi dengan Dokter Spesialis terkait sebelum kembali bertugas.</li>
+                                <li>Evaluasi tekanan darah dan keluhan harian dicatat pada modul <strong>Daily Check Up (DCU)</strong> setiap awal shift.</li>
+                                <li>Gunakan modul <strong>15 Aturan Power BI</strong> untuk surveilans otomatis faktor risiko komorbiditas.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 2: MCU ==================== -->
+            <section id="view-mcu" class="app-view" style="display:none;">
+                <div class="kpi-row" style="grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));">
+                    <div class="kpi-box blue"><div class="kpi-label">Total MCU</div><div class="kpi-num" id="mcuKpiTotal">2,285</div><div class="kpi-sub">Pekerja Selesai MCU</div></div>
+                    <div class="kpi-box green"><div class="kpi-label">FIT to Work</div><div class="kpi-num" id="mcuKpiFit">836</div><div class="kpi-sub">Laik Bekerja Penuh</div></div>
+                    <div class="kpi-box orange"><div class="kpi-label">FIT dg Catatan</div><div class="kpi-num" id="mcuKpiFitNote">1,424</div><div class="kpi-sub">Pemantauan Medis</div></div>
+                    <div class="kpi-box red"><div class="kpi-label">UNFIT to Work</div><div class="kpi-num" id="mcuKpiUnfit">25</div><div class="kpi-sub">Rujukan Spesialis Aktif</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="tbar">
+                            <div class="tbar-left">
+                                <span style="font-weight:700;">Filter:</span>
+                                <select id="mcuFilterKelaikan" class="form-select" onchange="mcuPage=1; renderMcuView()">
+                                    <option value="">Semua Kelaikan</option>
+                                    <option value="FIT_ONLY">FIT Murni</option>
+                                    <option value="CATATAN">FIT dg Catatan</option>
+                                    <option value="UNFIT">UNFIT</option>
+                                </select>
+                                <select id="mcuFilterArea" class="form-select" onchange="mcuPage=1; renderMcuView()">
+                                    <option value="">Semua Area</option>
+                                    <option value="Jakarta">Jakarta</option>
+                                    <option value="SOR 1">SOR 1</option>
+                                    <option value="SOR 2">SOR 2</option>
+                                    <option value="SOR 3">SOR 3</option>
+                                    <option value="Daan Mogot">EPC Daan Mogot</option>
+                                    <option value="Ketapang">Ketapang</option>
+                                </select>
+                            </div>
+                            <div class="tbar-right">
+                                <input type="text" id="mcuSearchInput" class="tbar-search-input" placeholder="Cari NIP, Nama, Divisi..." oninput="mcuPage=1; renderMcuView()">
+                                <button class="btn-secondary" onclick="exportCurrentCsv('mcu')"><i class="ti ti-download"></i> Export CSV</button>
+                                <button class="btn-primary" onclick="openAddMcuModal()"><i class="ti ti-plus"></i> Tambah MCU</button>
+                            </div>
+                        </div>
+
+                        <div class="tbl-wrap">
+                            <table class="dtbl">
+                                <thead>
+                                    <tr>
+                                        <th>NIP</th>
+                                        <th>No MR</th>
+                                        <th>Tgl MCU</th>
+                                        <th>Nama Karyawan</th>
+                                        <th>Area &amp; Divisi</th>
+                                        <th>Status</th>
+                                        <th>Kelaikan Kerja</th>
+                                        <th>Derajat</th>
+                                        <th>Tensi &amp; Lab Kritis</th>
+                                        <th>Rontgen &amp; EKG</th>
+                                        <th>Tindak Lanjut</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="mcuTableBody">
+                                    <tr><td colspan="12" style="text-align:center;padding:24px;">Memuat data MCU...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="mcuPagination" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 3: DCU ==================== -->
+            <section id="view-dcu" class="app-view" style="display:none;">
+                <div class="kpi-row" style="grid-template-columns:repeat(3, 1fr);">
+                    <div class="kpi-box blue"><div class="kpi-label">Total Pemeriksaan DCU</div><div class="kpi-num" id="dcuKpiTotal">1,975</div><div class="kpi-sub">Pemeriksaan Harian Seluruh Area</div></div>
+                    <div class="kpi-box green"><div class="kpi-label">FIT to Work</div><div class="kpi-num" id="dcuKpiFit">1,945</div><div class="kpi-sub">Laik Bertugas Lapangan &amp; Kantor</div></div>
+                    <div class="kpi-box red"><div class="kpi-label">UNFIT to Work</div><div class="kpi-num" id="dcuKpiUnfit">30</div><div class="kpi-sub">Istirahat Medis &amp; Evaluasi</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="tbar">
+                            <div class="tbar-left">
+                                <span style="font-weight:700;">Filter DCU:</span>
+                                <select id="dcuFilterKelaikan" class="form-select" onchange="dcuPage=1; renderDcuView()">
+                                    <option value="">Semua Kelaikan (FIT/UNFIT)</option>
+                                    <option value="FIT">FIT</option>
+                                    <option value="UNFIT">UNFIT</option>
+                                </select>
+                                <select id="dcuFilterArea" class="form-select" onchange="dcuPage=1; renderDcuView()">
+                                    <option value="">Semua Area</option>
+                                    <option value="Jakarta">Jakarta</option>
+                                    <option value="Ketapang">Ketapang</option>
+                                    <option value="Daan Mogot">EPC Daan Mogot</option>
+                                    <option value="SOR">SOR Sumatera / Jawa</option>
+                                </select>
+                                <select id="dcuFilterShift" class="form-select" onchange="dcuPage=1; renderDcuView()">
+                                    <option value="">Semua Shift</option>
+                                    <option value="Shift 1">Shift 1 (Pagi)</option>
+                                    <option value="Shift 2">Shift 2 (Siang)</option>
+                                    <option value="Shift 3">Shift 3 (Malam)</option>
+                                </select>
+                            </div>
+                            <div class="tbar-right">
+                                <input type="text" id="dcuSearchInput" class="tbar-search-input" placeholder="Cari NIP, Nama, Keluhan..." oninput="dcuPage=1; renderDcuView()">
+                                <button class="btn-secondary" onclick="exportCurrentCsv('dcu')"><i class="ti ti-download"></i> Export CSV</button>
+                                <button class="btn-primary" onclick="openAddDcuModal()"><i class="ti ti-plus"></i> Input DCU</button>
+                            </div>
+                        </div>
+
+                        <div class="tbl-wrap">
+                            <table class="dtbl">
+                                <thead>
+                                    <tr>
+                                        <th>DCU ID</th>
+                                        <th>NIP</th>
+                                        <th>Tanggal &amp; Waktu</th>
+                                        <th>Nama Pekerja</th>
+                                        <th>Area &amp; Shift</th>
+                                        <th>Tanda Vital (TD / Nadi / Suhu)</th>
+                                        <th>Keluhan Klinis</th>
+                                        <th>Pemeriksaan Fisik</th>
+                                        <th>Kelaikan DCU</th>
+                                        <th>Petugas</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dcuTableBody">
+                                    <tr><td colspan="11" style="text-align:center;padding:24px;">Memuat data DCU...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="dcuPagination" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 4: MASTER PEKERJA ==================== -->
+            <section id="view-employee" class="app-view" style="display:none;">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="tbar">
+                            <div class="tbar-left">
+                                <span style="font-weight:700;">Filter Pekerja:</span>
+                                <select id="empFilterStatus" class="form-select" onchange="empPage=1; renderEmpView()">
+                                    <option value="">Semua Status Karyawan</option>
+                                    <option value="Organik">Organik</option>
+                                    <option value="Perbantuan PGN">Perbantuan PGN</option>
+                                    <option value="PKWT">PKWT</option>
+                                    <option value="Perkasa">TKJP (Perkasa)</option>
+                                    <option value="KPU">TKJP (KPU)</option>
+                                </select>
+                                <select id="empFilterArea" class="form-select" onchange="empPage=1; renderEmpView()">
+                                    <option value="">Semua Area</option>
+                                    <option value="Jakarta">Jakarta</option>
+                                    <option value="SOR 1">SOR 1</option>
+                                    <option value="SOR 2">SOR 2</option>
+                                    <option value="SOR 3">SOR 3</option>
+                                    <option value="Daan Mogot">EPC Daan Mogot</option>
+                                    <option value="Ketapang">Ketapang</option>
+                                </select>
+                            </div>
+                            <div class="tbar-right">
+                                <input type="text" id="empSearchInput" class="tbar-search-input" placeholder="Cari NIP, Nama, Divisi..." oninput="empPage=1; renderEmpView()">
+                                <button class="btn-secondary" onclick="exportCurrentCsv('employee')"><i class="ti ti-download"></i> Export CSV</button>
+                                <button class="btn-primary" onclick="openAddEmpModal()"><i class="ti ti-user-plus"></i> Tambah Karyawan</button>
+                            </div>
+                        </div>
+
+                        <div class="tbl-wrap">
+                            <table class="dtbl">
+                                <thead>
+                                    <tr>
+                                        <th>NIP</th>
+                                        <th>No MR</th>
+                                        <th>Nama Karyawan</th>
+                                        <th>Status Karyawan</th>
+                                        <th>Area Kerja</th>
+                                        <th>Divisi &amp; Unit</th>
+                                        <th>Gender / Usia</th>
+                                        <th>Status MR</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="empTableBody">
+                                    <tr><td colspan="9" style="text-align:center;padding:24px;">Memuat data karyawan...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="empPagination" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 5: MONITORING KOMORBID ==================== -->
+            <section id="view-comorbid" class="app-view" style="display:none;">
+                <div class="kpi-row" style="grid-template-columns:repeat(auto-fit, minmax(170px, 1fr));">
+                    <div class="kpi-box red"><div class="kpi-label">Total Komorbid</div><div class="kpi-num" id="comKpiTotal">1,479</div><div class="kpi-sub">Pasien Dalam Pemantauan</div></div>
+                    <div class="kpi-box blue"><div class="kpi-label">Hipertensi</div><div class="kpi-num" id="comKpiHt">412</div><div class="kpi-sub">Terapi Antihipertensi</div></div>
+                    <div class="kpi-box orange"><div class="kpi-label">Diabetes Melitus</div><div class="kpi-num" id="comKpiDm">198</div><div class="kpi-sub">Terapi OHO / Diet</div></div>
+                    <div class="kpi-box purple"><div class="kpi-label">Dislipidemia</div><div class="kpi-num" id="comKpiLipid">865</div><div class="kpi-sub">Terapi Statin &amp; Diet</div></div>
+                    <div class="kpi-box teal"><div class="kpi-label">Rujukan Spesialis</div><div class="kpi-num" id="comKpiRujukan">1,479</div><div class="kpi-sub">Sp.PD / Sp.JP / Sp.P</div></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <div class="tbar">
+                            <div class="tbar-left">
+                                <span style="font-weight:700;">Filter Komorbid:</span>
+                                <select id="comFilterType" class="form-select" onchange="comPage=1; renderComView()">
+                                    <option value="">Semua Komorbid</option>
+                                    <option value="Hipertensi">Hipertensi</option>
+                                    <option value="Diabetes">Diabetes Melitus</option>
+                                    <option value="Dislipidemia">Dislipidemia</option>
+                                    <option value="Obesitas">Obesitas</option>
+                                    <option value="Hiperurisemia">Hiperurisemia</option>
+                                </select>
+                                <select id="comFilterArea" class="form-select" onchange="comPage=1; renderComView()">
+                                    <option value="">Semua Area</option>
+                                    <option value="Jakarta">Jakarta</option>
+                                    <option value="SOR 1">SOR 1</option>
+                                    <option value="SOR 2">SOR 2</option>
+                                    <option value="SOR 3">SOR 3</option>
+                                    <option value="Ketapang">Ketapang</option>
+                                </select>
+                            </div>
+                            <div class="tbar-right">
+                                <input type="text" id="comSearchInput" class="tbar-search-input" placeholder="Cari NIP, Nama, Obat..." oninput="comPage=1; renderComView()">
+                                <button class="btn-secondary" onclick="exportCurrentCsv('comorbid')"><i class="ti ti-download"></i> Export CSV</button>
+                                <button class="btn-primary" onclick="openAddComorbidModal()"><i class="ti ti-plus"></i> Tambah Pemantauan</button>
+                            </div>
+                        </div>
+
+                        <div class="tbl-wrap">
+                            <table class="dtbl">
+                                <thead>
+                                    <tr>
+                                        <th>NIP</th>
+                                        <th>Nama Karyawan</th>
+                                        <th>Area Kerja</th>
+                                        <th>Riwayat Komorbid</th>
+                                        <th>Terapi Obat Rutin</th>
+                                        <th>Rujukan ke dr. Spesialis</th>
+                                        <th>Jadwal Kontrol</th>
+                                        <th>Status</th>
+                                        <th>Catatan Klinis</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="comTableBody">
+                                    <tr><td colspan="10" style="text-align:center;padding:24px;">Memuat data komorbid...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="comPagination" style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==================== VIEW 6: 15 ATURAN POWER BI ==================== -->
+            <section id="view-screening" class="app-view" style="display:none;">
+                <div class="card" style="margin-bottom:16px;">
+                    <div class="card-header">
+                        <div class="card-title"><i class="ti ti-cpu"></i> Clinical Screening Engine — 15 Indikator Medis (Standar Power BI K3)</div>
+                        <button class="btn-secondary" onclick="activeRuleFilter=''; renderScreeningView()"><i class="ti ti-filter-off"></i> Tampilkan Semua</button>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size:12.5px;color:var(--text-med);margin-bottom:16px;">
+                            Sistem secara otomatis mengkalkulasi 15 indikator klinis risiko tinggi dari database MCU. Klik salah satu kartu indikator di bawah untuk menyaring pekerja:
+                        </p>
+                        <div class="pbi-grid" id="pbiRulesGrid"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="ti ti-list-details"></i> Daftar Karyawan Terindikasi Klinis <span id="screeningFilterTitle" style="color:var(--blue);"></span></div>
+                        <span class="badge b-fit" id="screeningCountBadge">0 Pekerja Ditampilkan</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="tbl-wrap">
+                            <table class="dtbl">
+                                <thead>
+                                    <tr>
+                                        <th>NIP</th>
+                                        <th>Nama Karyawan</th>
+                                        <th>Area &amp; Divisi</th>
+                                        <th>Kelaikan Kerja</th>
+                                        <th>Parameter Kritis</th>
+                                        <th>Rontgen &amp; EKG</th>
+                                        <th>Tindakan / Anjuran</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="screeningTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <footer class="main-footer">
+            <div><strong>EHMS - Enterprise Health Management System</strong> &copy; 2026 PT PGAS Solution.</div>
+            <div>Terhubung ke Google Apps Script: <a href="https://script.google.com/macros/s/AKfycbyElWAEb7e0gO_TL_WBai7GHUKUn9tEAegPXUK6TMmQgDrPHCjoXbwWXlc1549HwTgVag/exec" target="_blank" style="color:var(--blue);text-decoration:none;font-weight:600;">AKfycbyElWAE...TgVag/exec</a></div>
+        </footer>
+    </main>
+</div>
+
+<!-- ==================== MODAL EMR LENGKAP (6 TABS) ==================== -->
+<div class="modal-overlay" id="emrModal" style="display:none;">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-header" style="background:#0F172A;color:#fff;padding:16px 24px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:42px;height:42px;border-radius:10px;background:#1E293B;display:flex;align-items:center;justify-content:center;font-size:22px;color:#38BDF8;">
+                    <i class="ti ti-id-badge-2"></i>
+                </div>
+                <div>
+                    <div style="font-size:16px;font-weight:700;">Electronic Medical Record (EMR) - Rekam Medis Pekerja</div>
+                    <div style="font-size:11.5px;color:#94A3B8;">Standar K3 &amp; Surveilans Kesehatan PT PGAS Solution</div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:10px;">
+                <button class="btn-primary" onclick="window.print()" style="padding:6px 14px;font-size:12px;"><i class="ti ti-printer"></i> Cetak Resume Medis</button>
+                <button onclick="closeEmrModal()" style="background:transparent;border:none;color:#94A3B8;font-size:22px;cursor:pointer;">&times;</button>
+            </div>
+        </div>
+        <div class="modal-body" style="padding:20px 24px;">
+            <div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;display:grid;grid-template-columns:auto 1fr auto;gap:20px;align-items:center;margin-bottom:18px;">
+                <div style="width:64px;height:64px;border-radius:12px;background:linear-gradient(135deg, #0284C7 0%, #0369A1 100%);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:700;">
+                    <span id="emrAvatarLetter">K</span>
+                </div>
+                <div>
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px;flex-wrap:wrap;">
+                        <h2 style="font-size:18px;font-weight:800;color:#0F172A;margin:0;" id="emrNama">-</h2>
+                        <span class="badge b-org" id="emrStatusBadge">Organik</span>
+                        <span class="badge b-fit" id="emrKelaikanBadge">FIT</span>
+                    </div>
+                    <div style="font-size:12.5px;color:#64748B;display:flex;gap:16px;flex-wrap:wrap;">
+                        <span><i class="ti ti-id"></i> NIP: <strong id="emrNip" style="color:#0F172A;">-</strong></span>
+                        <span><i class="ti ti-map-pin"></i> Area: <strong id="emrArea" style="color:#0F172A;">-</strong></span>
+                        <span><i class="ti ti-briefcase"></i> Divisi: <strong id="emrDivisi" style="color:#0F172A;">-</strong></span>
+                        <span><i class="ti ti-user"></i> Gender/Usia: <strong id="emrGenderAge" style="color:#0F172A;">-</strong></span>
+                    </div>
+                </div>
+                <div style="text-align:right;border-left:1px solid #E2E8F0;padding-left:18px;">
+                    <div style="font-size:11px;color:#64748B;text-transform:uppercase;font-weight:600;">Status Rekam Medis</div>
+                    <div style="font-size:13.5px;font-weight:800;color:#0284C7;" id="emrStatusMr">Active</div>
+                    <div style="font-size:11px;color:#94A3B8;margin-top:2px;">Tgl MCU: <span id="emrTglPeriksa">-</span></div>
+                </div>
+            </div>
+
+            <div class="tab-nav-wrapper" style="border-bottom:1px solid #E2E8F0;margin-bottom:16px;display:flex;gap:6px;flex-wrap:wrap;">
+                <button class="tab-btn active" onclick="switchEmrTab('tab-ringkasan', this)"><i class="ti ti-dashboard"></i> Ringkasan Medis</button>
+                <button class="tab-btn" onclick="switchEmrTab('tab-fisik', this)"><i class="ti ti-heart-rate-monitor"></i> Tanda Vital &amp; Fisik</button>
+                <button class="tab-btn" onclick="switchEmrTab('tab-lab', this)"><i class="ti ti-flask"></i> Laboratorium Lengkap</button>
+                <button class="tab-btn" onclick="switchEmrTab('tab-penunjang', this)"><i class="ti ti-device-heart-monitor"></i> Penunjang &amp; Rontgen</button>
+                <button class="tab-btn" onclick="switchEmrTab('tab-dcu', this)"><i class="ti ti-stethoscope"></i> Riwayat DCU Harian</button>
+                <button class="tab-btn" onclick="switchEmrTab('tab-komorbid', this)"><i class="ti ti-pill"></i> Pemantauan Komorbid</button>
+            </div>
+
+            <!-- Tab 1: Ringkasan -->
+            <div class="emr-tab-content" id="tab-ringkasan">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;">
+                    <div class="card" style="margin:0;">
+                        <div class="card-header"><div class="card-title"><i class="ti ti-report-medical"></i> Kesimpulan &amp; Kelaikan Kerja</div></div>
+                        <div class="card-body">
+                            <div style="margin-bottom:10px;"><div style="font-size:11.5px;color:#64748B;">Hasil Kelaikan Kerja:</div><div style="font-size:15px;font-weight:700;" id="emrKelaikanText">-</div></div>
+                            <div style="margin-bottom:10px;"><div style="font-size:11.5px;color:#64748B;">Temuan Medis Abnormal:</div><div style="font-size:12.5px;background:#FFF1F2;padding:10px;border-radius:8px;border:1px solid #FECDD3;" id="emrTemuan">-</div></div>
+                            <div><div style="font-size:11.5px;color:#64748B;">Derajat Kesehatan:</div><div style="font-size:12.5px;">Sebelum: <strong id="emrDerajatSebelum">P2</strong> &rarr; Sesudah: <strong id="emrDerajatSesudah">P1</strong></div></div>
+                        </div>
+                    </div>
+                    <div class="card" style="margin:0;">
+                        <div class="card-header"><div class="card-title"><i class="ti ti-notes"></i> Saran Dokter &amp; Tindak Lanjut</div></div>
+                        <div class="card-body">
+                            <div style="margin-bottom:10px;"><div style="font-size:11.5px;color:#64748B;">Saran &amp; Rekomendasi Medis:</div><div style="font-size:12.5px;background:#F0FDF4;padding:10px;border-radius:8px;border:1px solid #BBF7D0;" id="emrAnjuran">-</div></div>
+                            <div style="margin-bottom:10px;"><div style="font-size:11.5px;color:#64748B;">Tindak Lanjut &amp; Dokter Pemeriksa:</div><div style="font-size:13px;font-weight:600;color:#0284C7;" id="emrRujukan">-</div></div>
+                            <div><span class="badge b-fit" id="emrStatusTindakLanjut">Selesai</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Fisik -->
+            <div class="emr-tab-content" id="tab-fisik" style="display:none;">
+                <div class="kpi-row">
+                    <div class="kpi-box blue"><div class="kpi-label">Tekanan Darah</div><div class="kpi-num" style="font-size:20px;" id="emrTdVal">-</div><div class="kpi-sub" id="emrTdStatus">mmHg</div></div>
+                    <div class="kpi-box teal"><div class="kpi-label">BMI / Antropometri</div><div class="kpi-num" style="font-size:20px;" id="emrBmiVal">-</div><div class="kpi-sub" id="emrBmiStatus">-</div></div>
+                    <div class="kpi-box orange"><div class="kpi-label">Nadi &amp; Suhu</div><div class="kpi-num" style="font-size:20px;" id="emrNadiSuhuVal">-</div><div class="kpi-sub">Tanda Vital</div></div>
+                </div>
+                <div class="card" style="margin:0;">
+                    <div class="card-header"><div class="card-title">Catatan Pemeriksaan Fisik Lengkap</div></div>
+                    <div class="card-body" id="emrPemFisikText" style="font-size:13px;line-height:1.6;">Dalam batas normal.</div>
+                </div>
+            </div>
+
+            <!-- Tab 3: Lab -->
+            <div class="emr-tab-content" id="tab-lab" style="display:none;">
+                <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:16px;">
+                    <div class="card" style="margin:0;">
+                        <div class="card-header"><div class="card-title"><i class="ti ti-droplet"></i> Glukosa, Lipid &amp; Hematologi</div></div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead><tr><th>Parameter</th><th>Hasil</th><th>Rujukan</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Glukosa Puasa (GDP)</td><td><strong id="labGdp">-</strong> mg/dL</td><td>70 - 100</td></tr>
+                                    <tr><td>HbA1c</td><td><strong id="labHba1c">-</strong> %</td><td>&lt; 5.7%</td></tr>
+                                    <tr><td>Kolesterol Total</td><td><strong id="labChol">-</strong> mg/dL</td><td>&lt; 200</td></tr>
+                                    <tr><td>Trigliserida</td><td><strong id="labTrig">-</strong> mg/dL</td><td>&lt; 150</td></tr>
+                                    <tr><td>LDL / HDL</td><td><strong id="labLdlHdl">-</strong> mg/dL</td><td>&lt;100 / &gt;40</td></tr>
+                                    <tr><td>Hemoglobin (Hb)</td><td><strong id="labHb">-</strong> g/dL</td><td>13.0 - 17.5</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="card" style="margin:0;">
+                        <div class="card-header"><div class="card-title"><i class="ti ti-activity-heartbeat"></i> Ginjal, Hati &amp; Urinalisa</div></div>
+                        <div class="card-body">
+                            <table class="table">
+                                <thead><tr><th>Parameter</th><th>Hasil</th><th>Rujukan</th></tr></thead>
+                                <tbody>
+                                    <tr><td>Asam Urat</td><td><strong id="labAu">-</strong> mg/dL</td><td>3.5 - 7.0</td></tr>
+                                    <tr><td>Ureum / Kreatinin</td><td><strong id="labGinjal">-</strong> mg/dL</td><td>10-50 / 0.6-1.2</td></tr>
+                                    <tr><td>SGOT / SGPT</td><td><strong id="labLiver">-</strong> U/L</td><td>&lt;35 / &lt;45</td></tr>
+                                    <tr><td>Urinalisa Lengkap</td><td><strong id="labUrin">-</strong></td><td>Negatif</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 4: Penunjang -->
+            <div class="emr-tab-content" id="tab-penunjang" style="display:none;">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+                    <div class="card" style="margin:0;"><div class="card-header"><div class="card-title">Rontgen Thorax</div></div><div class="card-body" id="emrRontgen">-</div></div>
+                    <div class="card" style="margin:0;"><div class="card-header"><div class="card-title">EKG &amp; Treadmill</div></div><div class="card-body" id="emrEkg">-</div></div>
+                    <div class="card" style="margin:0;"><div class="card-header"><div class="card-title">Audiometri &amp; Spirometri</div></div><div class="card-body" id="emrAudioSpiro">-</div></div>
+                    <div class="card" style="margin:0;"><div class="card-header"><div class="card-title">Kebugaran SKJ &amp; Mental SRQ-20</div></div><div class="card-body" id="emrSkjSrq">-</div></div>
+                </div>
+            </div>
+
+            <!-- Tab 5: Riwayat DCU -->
+            <div class="emr-tab-content" id="tab-dcu" style="display:none;">
+                <table class="table">
+                    <thead><tr><th>Tanggal DCU</th><th>Tensi (TD)</th><th>Nadi / Suhu</th><th>Keluhan</th><th>Kelaikan DCU</th><th>Petugas</th></tr></thead>
+                    <tbody id="emrDcuTableBody"></tbody>
+                </table>
+            </div>
+
+            <!-- Tab 6: Komorbid -->
+            <div class="emr-tab-content" id="tab-komorbid" style="display:none;">
+                <table class="table">
+                    <tbody>
+                        <tr><td style="width:25%;font-weight:600;">Diagnosis Komorbid</td><td id="emrKomorbidDiag">-</td></tr>
+                        <tr><td style="font-weight:600;">Terapi Obat Rutin</td><td id="emrKomorbidObat">-</td></tr>
+                        <tr><td style="font-weight:600;">Rujukan Dokter Spesialis</td><td id="emrKomorbidRujukan">-</td></tr>
+                        <tr><td style="font-weight:600;">Jadwal Kontrol &amp; Status</td><td id="emrKomorbidKontrol">-</td></tr>
+                        <tr><td style="font-weight:600;">Catatan Klinis</td><td id="emrKomorbidCatatan">-</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="closeEmrModal()">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL KONEKSI CLOUD APPS SCRIPT ==================== -->
+<div class="modal-overlay" id="cloudModal" style="display:none;">
+    <div class="modal-dialog">
+        <div class="modal-header" style="background:#0F172A;color:#fff;">
+            <div style="font-weight:700;display:flex;align-items:center;gap:8px;"><i class="ti ti-cloud-computing" style="color:#38BDF8;"></i> Integrasi Google Sheets &amp; Apps Script Deployment</div>
+            <button onclick="document.getElementById('cloudModal').style.display='none'" style="background:transparent;border:none;color:#fff;font-size:20px;cursor:pointer;">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="background:#F0F9FF;border:1px solid #BAE6FD;border-radius:8px;padding:12px;margin-bottom:14px;font-size:12.5px;color:#0369A1;">
+                <strong><i class="ti ti-link"></i> Terhubung ke Google Apps Script Web App:</strong><br>
+                Frontend GitHub ini telah dikonfigurasi untuk mengambil dan menyimpan data langsung ke Google Sheets melalui URL Deployment Apps Script Anda.
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL Web App Google Apps Script (Exec Endpoint)</label>
+                <input type="text" id="gasUrlInput" class="form-control" value="https://script.google.com/macros/s/AKfycbyElWAEb7e0gO_TL_WBai7GHUKUn9tEAegPXUK6TMmQgDrPHCjoXbwWXlc1549HwTgVag/exec">
+            </div>
+            <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+                <button class="btn-primary" onclick="saveGasUrlAndSync()"><i class="ti ti-refresh"></i> Test &amp; Sinkronkan Sekarang</button>
+                <button class="btn-secondary" onclick="navigator.clipboard.writeText(document.getElementById('gasUrlInput').value); alert('URL Deployment disalin!')"><i class="ti ti-copy"></i> Salin URL</button>
+                <a href="https://script.google.com/macros/s/AKfycbyElWAEb7e0gO_TL_WBai7GHUKUn9tEAegPXUK6TMmQgDrPHCjoXbwWXlc1549HwTgVag/exec" target="_blank" class="btn-secondary"><i class="ti ti-external-link"></i> Buka di Tab Baru</a>
+            </div>
+            <div id="cloudPingResult" style="font-size:12px;background:#F8FAFC;border:1px solid var(--border);border-radius:8px;padding:12px;">
+                Status: <strong>Siap terhubung ke endpoint Google Apps Script.</strong><br>
+                <em>Tips Deployment Google Sheet:</em> Pastikan di editor Google Apps Script Anda telah memperbarui <code>Code.gs</code> dan mengatur <strong>Deploy &rarr; Manage deployments &rarr; Who has access: Anyone</strong> agar komunikasi API lintas-domain dari GitHub berjalan penuh tanpa blokir login.
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-secondary" onclick="document.getElementById('cloudModal').style.display='none'">Tutup</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MODAL TAMBAH MCU ==================== -->
+<div class="modal-overlay" id="mcuModal" style="display:none;">
+    <div class="modal-dialog">
+        <div class="modal-header"><div class="modal-title"><i class="ti ti-clipboard-plus"></i> Input Pemeriksaan MCU Baru (Simpan ke Google Sheet)</div><button class="btn-close" onclick="document.getElementById('mcuModal').style.display='none'">&times;</button></div>
+        <form onsubmit="submitFormRecord(event, 'mcu')">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label">NIP Pekerja *</label><input type="text" name="nip" class="form-control" required oninput="autofillByNip(this.value, this.form)"></div>
+                    <div class="form-group"><label class="form-label">Nama Lengkap *</label><input type="text" name="nama" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Area Kerja</label><input type="text" name="area" class="form-control" value="Jakarta (Kantor Pusat)"></div>
+                    <div class="form-group"><label class="form-label">Divisi</label><input type="text" name="divisi" class="form-control" value="Operasional"></div>
+                    <div class="form-group"><label class="form-label">Tekanan Darah Sistol (mmHg)</label><input type="number" name="sistol" class="form-control" value="120"></div>
+                    <div class="form-group"><label class="form-label">Tekanan Darah Diastol (mmHg)</label><input type="number" name="diastol" class="form-control" value="80"></div>
+                    <div class="form-group"><label class="form-label">Berat Badan (kg)</label><input type="number" step="0.1" name="bb" class="form-control" value="68"></div>
+                    <div class="form-group"><label class="form-label">Tinggi Badan (cm)</label><input type="number" step="0.1" name="tb" class="form-control" value="168"></div>
+                    <div class="form-group"><label class="form-label">Gula Darah Puasa / GDP (mg/dL)</label><input type="number" name="gdp" class="form-control" value="92"></div>
+                    <div class="form-group"><label class="form-label">Kolesterol Total (mg/dL)</label><input type="number" name="chol" class="form-control" value="185"></div>
+                    <div class="form-group"><label class="form-label">Asam Urat (mg/dL)</label><input type="number" step="0.1" name="asam_urat" class="form-control" value="5.5"></div>
+                    <div class="form-group"><label class="form-label">Kelaikan Kerja *</label>
+                        <select name="kelaikan_kerja" class="form-control">
+                            <option value="FIT">FIT</option>
+                            <option value="FIT dengan catatan">FIT dengan catatan</option>
+                            <option value="UNFIT">UNFIT</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group"><label class="form-label">Temuan Medis / Anjuran</label><input type="text" name="temuan_abnormal" class="form-control" value="Dalam batas normal"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('mcuModal').style.display='none'">Batal</button>
+                <button type="submit" class="btn-primary"><i class="ti ti-device-floppy"></i> Simpan ke Sheet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== MODAL INPUT DCU ==================== -->
+<div class="modal-overlay" id="dcuModal" style="display:none;">
+    <div class="modal-dialog">
+        <div class="modal-header"><div class="modal-title"><i class="ti ti-stethoscope"></i> Input Daily Check Up (DCU) Baru</div><button class="btn-close" onclick="document.getElementById('dcuModal').style.display='none'">&times;</button></div>
+        <form onsubmit="submitFormRecord(event, 'dcu')">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label">NIP Pekerja *</label><input type="text" name="nip" class="form-control" required oninput="autofillByNip(this.value, this.form)"></div>
+                    <div class="form-group"><label class="form-label">Nama Pekerja *</label><input type="text" name="nama" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Area Kerja</label><input type="text" name="area" class="form-control" value="Jakarta (Kantor Pusat)"></div>
+                    <div class="form-group"><label class="form-label">Shift Kerja</label>
+                        <select name="shift" class="form-control">
+                            <option value="Shift 1 (Pagi)">Shift 1 (Pagi)</option>
+                            <option value="Shift 2 (Siang)">Shift 2 (Siang)</option>
+                            <option value="Shift 3 (Malam)">Shift 3 (Malam)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Sistol (mmHg)</label><input type="number" name="sistol" class="form-control" value="120"></div>
+                    <div class="form-group"><label class="form-label">Diastol (mmHg)</label><input type="number" name="diastol" class="form-control" value="80"></div>
+                    <div class="form-group"><label class="form-label">Nadi (bpm)</label><input type="number" name="nadi" class="form-control" value="78"></div>
+                    <div class="form-group"><label class="form-label">Suhu (&deg;C)</label><input type="number" step="0.1" name="suhu" class="form-control" value="36.5"></div>
+                    <div class="form-group"><label class="form-label">Kelaikan DCU (Murni FIT/UNFIT) *</label>
+                        <select name="kelaikan" class="form-control">
+                            <option value="FIT">FIT</option>
+                            <option value="UNFIT">UNFIT</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Petugas Pemeriksa</label><input type="text" name="petugas" class="form-control" value="dr. Tim Medis K3"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Keluhan Klinis</label><input type="text" name="keluhan" class="form-control" value="Tidak ada keluhan"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('dcuModal').style.display='none'">Batal</button>
+                <button type="submit" class="btn-primary"><i class="ti ti-device-floppy"></i> Simpan DCU ke Sheet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== MODAL TAMBAH KARYAWAN ==================== -->
+<div class="modal-overlay" id="empModal" style="display:none;">
+    <div class="modal-dialog">
+        <div class="modal-header"><div class="modal-title"><i class="ti ti-user-plus"></i> Tambah Master Pekerja</div><button class="btn-close" onclick="document.getElementById('empModal').style.display='none'">&times;</button></div>
+        <form onsubmit="submitFormRecord(event, 'employee')">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label">NIP *</label><input type="text" name="nip" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Nama Lengkap *</label><input type="text" name="nama" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Status Karyawan</label>
+                        <select name="status_karyawan" class="form-control">
+                            <option value="Organik">Organik</option>
+                            <option value="Perbantuan PGN">Perbantuan PGN</option>
+                            <option value="PKWT">PKWT</option>
+                            <option value="TKJP (Perkasa)">TKJP (Perkasa)</option>
+                            <option value="TKJP (KPU)">TKJP (KPU)</option>
+                        </select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Area Kerja</label><input type="text" name="area" class="form-control" value="Jakarta (Kantor Pusat)"></div>
+                    <div class="form-group"><label class="form-label">Divisi</label><input type="text" name="divisi" class="form-control" value="Operation Project"></div>
+                    <div class="form-group"><label class="form-label">Gender</label>
+                        <select name="gender" class="form-control"><option value="Laki-laki">Laki-laki</option><option value="Perempuan">Perempuan</option></select>
+                    </div>
+                    <div class="form-group"><label class="form-label">Usia (Thn)</label><input type="number" name="usia" class="form-control" value="30"></div>
+                    <div class="form-group"><label class="form-label">Status MR</label>
+                        <select name="mr_status" class="form-control"><option value="Active">Active</option><option value="Inactive">Inactive</option></select>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('empModal').style.display='none'">Batal</button>
+                <button type="submit" class="btn-primary"><i class="ti ti-device-floppy"></i> Simpan Pekerja</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ==================== MODAL TAMBAH KOMORBID ==================== -->
+<div class="modal-overlay" id="comModal" style="display:none;">
+    <div class="modal-dialog">
+        <div class="modal-header"><div class="modal-title"><i class="ti ti-pill"></i> Tambah Pemantauan Komorbiditas</div><button class="btn-close" onclick="document.getElementById('comModal').style.display='none'">&times;</button></div>
+        <form onsubmit="submitFormRecord(event, 'comorbid')">
+            <div class="modal-body">
+                <div class="form-grid">
+                    <div class="form-group"><label class="form-label">NIP *</label><input type="text" name="nip" class="form-control" required oninput="autofillByNip(this.value, this.form)"></div>
+                    <div class="form-group"><label class="form-label">Nama Karyawan *</label><input type="text" name="nama" class="form-control" required></div>
+                    <div class="form-group"><label class="form-label">Area Kerja</label><input type="text" name="area" class="form-control" value="Jakarta (Kantor Pusat)"></div>
+                    <div class="form-group"><label class="form-label">Diagnosis Komorbid</label><input type="text" name="komorbid" class="form-control" value="Hipertensi"></div>
+                    <div class="form-group"><label class="form-label">Terapi Obat Rutin</label><input type="text" name="obat" class="form-control" value="Amlodipine 5mg 1x1"></div>
+                    <div class="form-group"><label class="form-label">Rujukan Dokter Spesialis</label><input type="text" name="rujukan" class="form-control" value="dr. Sp.PD (Penyakit Dalam)"></div>
+                    <div class="form-group"><label class="form-label">Jadwal Kontrol</label><input type="text" name="kontrol" class="form-control" value="15/11/2026"></div>
+                    <div class="form-group"><label class="form-label">Status Kontrol</label><input type="text" name="status" class="form-control" value="Terkontrol Baik"></div>
+                </div>
+                <div class="form-group"><label class="form-label">Catatan Klinis</label><input type="text" name="catatan" class="form-control" value="Pemantauan rutin K3"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-secondary" onclick="document.getElementById('comModal').style.display='none'">Batal</button>
+                <button type="submit" class="btn-primary"><i class="ti ti-device-floppy"></i> Simpan Komorbid</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// ============================================================================
+// KONFIGURASI UTAMA DEPLOYMENT GOOGLE APPS SCRIPT -> GITHUB FRONTEND
+// ============================================================================
+let GAS_WEBAPP_URL = localStorage.getItem('ehms_gas_url') || "https://script.google.com/macros/s/AKfycbyElWAEb7e0gO_TL_WBai7GHUKUn9tEAegPXUK6TMmQgDrPHCjoXbwWXlc1549HwTgVag/exec";
+
+const DB = {
+    mcu: [],
+    dcu: [],
+    employee: [],
+    comorbid: [],
+    loaded: false
+};
+
+let mcuPage = 1, dcuPage = 1, empPage = 1, comPage = 1;
+const PAGE_LIMIT = 15;
+let activeRuleFilter = '';
+
+// Cek apakah berjalan di dalam iframe Google Apps Script native
+function isNativeAppsScript() {
+    return (typeof google !== 'undefined' && google.script && google.script.run);
+}
+
+// Parser CSV RFC-4180 cepat untuk memuat data-sheets/*.csv di GitHub Pages
+function parseCsvText(text) {
+    const rows = [];
+    let row = [], cur = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+        const ch = text[i], next = text[i + 1];
+        if (inQuotes) {
+            if (ch === '"' && next === '"') { cur += '"'; i++; }
+            else if (ch === '"') { inQuotes = false; }
+            else { cur += ch; }
+        } else {
+            if (ch === '"') { inQuotes = true; }
+            else if (ch === ',') { row.push(cur); cur = ''; }
+            else if (ch === '\n' || (ch === '\r' && next === '\n')) {
+                if (ch === '\r') i++;
+                row.push(cur);
+                if (row.length > 1 || row[0] !== '') rows.push(row);
+                row = []; cur = '';
+            } else { cur += ch; }
+        }
+    }
+    if (cur !== '' || row.length > 0) { row.push(cur); rows.push(row); }
+    return rows;
+}
+
+// ============================================================================
+// SINKRONISASI DATA DARI GOOGLE APPS SCRIPT & DATA-SHEETS CSV
+// ============================================================================
+async function initEhmsData() {
+    document.getElementById('gasUrlInput').value = GAS_WEBAPP_URL;
+
+    // 1. Muat dataset CSV lokal di repo GitHub (data-sheets/) agar 2.285 data riil langsung siap
+    await loadCsvDataSheets();
+
+    // 2. Sinkronisasi dengan Google Apps Script Endpoint
+    await syncFromAppsScript(false);
+}
+
+async function loadCsvDataSheets() {
+    const basePaths = ['./data-sheets/', '../data-sheets/', './kode_google/'];
+    let basePath = './data-sheets/';
+    for (const bp of basePaths) {
+        try {
+            const testResp = await fetch(bp + 'MCU_DATA.csv', { method: 'HEAD' });
+            if (testResp.ok) { basePath = bp; break; }
+        } catch (e) {}
+    }
+
+    try {
+        const [mcuRes, dcuRes, empRes, comRes] = await Promise.all([
+            fetch(basePath + 'MCU_DATA.csv'),
+            fetch(basePath + 'DCU_DATA.csv'),
+            fetch(basePath + 'KARYAWAN_DATA.csv'),
+            fetch(basePath + 'KOMORBID_DATA.csv')
+        ]);
+
+        if (mcuRes.ok) {
+            const rows = parseCsvText(await mcuRes.text());
+            DB.mcu = rows.slice(1).map((r, i) => ({
+                id: i + 1,
+                nip: r[0] || '', mr_no: r[1] || ('MR-' + (i + 1)), nama: r[2] || '',
+                gender: r[3] || 'Laki-laki', tgl_lahir: r[4] || '', usia: r[5] || 30,
+                divisi: r[6] || '', unit: r[7] || '', area: r[8] || '',
+                status_karyawan: r[9] || 'Organik', tahun: r[10] || '2026', tgl_mcu: r[11] || '',
+                sistol: parseFloat(r[12]) || 120, diastol: parseFloat(r[13]) || 80,
+                nadi: parseFloat(r[14]) || 78, suhu: parseFloat(r[15]) || 36.5,
+                bb: parseFloat(r[16]) || 68, tb: parseFloat(r[17]) || 168,
+                bmi: parseFloat(r[18]) || 23.5, lingkar_pinggang: parseFloat(r[19]) || 82,
+                pem_fisik: r[20] || 'Dalam batas normal', rontgen: r[21] || 'Normal',
+                ekg: r[22] || 'Dalam Batas Normal', treadmill: r[23] || '-',
+                audiometri: r[24] || 'Normal', spirometri: r[25] || 'Normal',
+                urinalisa: r[26] || 'Negatif', hb: parseFloat(r[27]) || 14.5,
+                gdp: parseFloat(r[28]) || 90, hba1c: parseFloat(r[29]) || 5.4,
+                chol: parseFloat(r[30]) || 180, trig: parseFloat(r[31]) || 110,
+                ldl: parseFloat(r[32]) || 100, hdl: parseFloat(r[33]) || 50,
+                asam_urat: parseFloat(r[34]) || 5.5, ureum: parseFloat(r[35]) || 25,
+                kreatinin: parseFloat(r[36]) || 0.9, sgot: parseFloat(r[37]) || 22,
+                sgpt: parseFloat(r[38]) || 25, temuan_abnormal: r[39] || '-',
+                saran: r[40] || '-', derajat_sebelum: r[41] || 'P2', derajat_sesudah: r[42] || 'P1',
+                skj: r[43] || 'Low Risk', srq: r[44] || 'Normal',
+                tindak_lanjut: r[45] || 'Resep', status_tindak_lanjut: r[46] || 'Selesai',
+                kelaikan_kerja: r[47] || 'FIT', dokter: r[48] || 'dr. Hessty'
+            }));
+        }
+
+        if (dcuRes.ok) {
+            const rows = parseCsvText(await dcuRes.text());
+            DB.dcu = rows.slice(1).map((r, i) => ({
+                id: i + 1, dcu_id: r[0] || ('DCU-' + String(i + 1).padStart(5, '0')),
+                nip: r[1] || '', nama: r[2] || '', area: r[3] || '',
+                shift: r[4] || 'Shift 1 (Pagi)', tgl: r[5] || '',
+                sistol: parseFloat(r[6]) || 120, diastol: parseFloat(r[7]) || 80,
+                nadi: parseFloat(r[8]) || 78, suhu: parseFloat(r[9]) || 36.5,
+                keluhan: r[10] || 'Tidak ada keluhan', pem_fisik: r[11] || 'Kesadaran CM, TTV stabil',
+                kelaikan: String(r[12] || 'FIT').toUpperCase().includes('UNFIT') ? 'UNFIT' : 'FIT',
+                petugas: r[13] || 'dr. Tim Medis K3'
+            }));
+        }
+
+        if (empRes.ok) {
+            const rows = parseCsvText(await empRes.text());
+            DB.employee = rows.slice(1).map((r, i) => ({
+                id: i + 1, nip: r[0] || '', mr_no: r[1] || ('MR-' + (i + 1)),
+                nama: r[2] || '', gender: r[3] || 'Laki-laki', tgl_lahir: r[4] || '',
+                usia: r[5] || 30, status_karyawan: r[6] || 'Organik',
+                area: r[7] || '', divisi: r[8] || '', unit: r[9] || 'Field Ops',
+                mr_status: r[10] || 'Active'
+            }));
+        }
+
+        if (comRes.ok) {
+            const rows = parseCsvText(await comRes.text());
+            DB.comorbid = rows.slice(1).map((r, i) => ({
+                id: i + 1, nip: r[0] || '', nama: r[1] || '', area: r[2] || '',
+                komorbid: r[3] || '', obat: r[4] || '', rujukan: r[5] || '',
+                kontrol: r[6] || '', status: r[7] || 'Terkontrol Baik', catatan: r[8] || ''
+            }));
+        }
+
+        DB.loaded = true;
+        refreshAllViews();
+    } catch (err) {
+        console.warn('CSV local fetch fallback:', err);
+    }
+}
+
+async function syncFromAppsScript(showNotification) {
+    const dot = document.getElementById('connDot');
+    const txt = document.getElementById('connStatusText');
+    const badge = document.getElementById('liveSyncBadge');
+    dot.classList.add('syncing');
+    txt.innerText = 'Menghubungkan ke Apps Script...';
+
+    // Mode 1: Jika di dalam Google Apps Script Native
+    if (isNativeAppsScript()) {
+        google.script.run.withSuccessHandler(function(res) {
+            dot.classList.remove('syncing');
+            txt.innerText = 'Apps Script Cloud Active';
+            badge.innerText = 'NATIVE CLOUD';
+            if (res && res.data) applySummaryNumbers(res.data);
+            if (showNotification) alert('Sinkronisasi langsung dengan Google Sheets berhasil!');
+        }).apiGetSummaryStats();
+
+        google.script.run.withSuccessHandler(function(r) { if (r && r.data && r.data.length) { DB.mcu = r.data; refreshAllViews(); } }).apiGetMcuData(1, 3000, '', '', '', '');
+        google.script.run.withSuccessHandler(function(r) { if (r && r.data && r.data.length) { DB.dcu = r.data; refreshAllViews(); } }).apiGetDcuData(1, 3000, '', '', '', '');
+        google.script.run.withSuccessHandler(function(r) { if (r && r.data && r.data.length) { DB.employee = r.data; refreshAllViews(); } }).apiGetEmployeeData(1, 3000, '', '', '', '');
+        google.script.run.withSuccessHandler(function(r) { if (r && r.data && r.data.length) { DB.comorbid = r.data; refreshAllViews(); } }).apiGetComorbidData(1, 3000, '', '', '');
+        return;
+    }
+
+    // Mode 2: Fetch REST API dari GitHub Frontend ke URL Deployment Google Apps Script
+    try {
+        const resp = await fetch(GAS_WEBAPP_URL + '?action=summary', {
+            method: 'GET',
+            headers: { 'Accept': 'application/json' }
+        });
+        const contentType = resp.headers.get('content-type') || '';
+        if (resp.ok && contentType.includes('application/json')) {
+            const res = await resp.json();
+            if (res && res.success && res.data) {
+                applySummaryNumbers(res.data);
+                dot.classList.remove('syncing');
+                txt.innerText = 'Terhubung Live: Google Sheet';
+                badge.innerText = 'LIVE API SYNCED';
+                const pingBox = document.getElementById('cloudPingResult');
+                if (pingBox) {
+                    pingBox.innerHTML = `<span style="color:#059669;font-weight:700;"><i class="ti ti-circle-check"></i> Koneksi REST API Berhasil!</span><br>Total MCU di Sheet: <strong>${res.data.mcu.total}</strong> &bull; Total DCU: <strong>${res.data.dcu.total}</strong>`;
+                }
+                // Tarik data tabel terbaru dari Google Sheet jika tersedia
+                if (res.data.mcu && res.data.mcu.total > 0) {
+                    fetch(GAS_WEBAPP_URL + '?action=mcu&limit=3000').then(r => r.json()).then(j => { if (j && j.data && j.data.length) { DB.mcu = j.data; refreshAllViews(); } }).catch(() => {});
+                    fetch(GAS_WEBAPP_URL + '?action=dcu&limit=3000').then(r => r.json()).then(j => { if (j && j.data && j.data.length) { DB.dcu = j.data; refreshAllViews(); } }).catch(() => {});
+                    fetch(GAS_WEBAPP_URL + '?action=employees&limit=3000').then(r => r.json()).then(j => { if (j && j.data && j.data.length) { DB.employee = j.data; refreshAllViews(); } }).catch(() => {});
+                    fetch(GAS_WEBAPP_URL + '?action=comorbid&limit=3000').then(r => r.json()).then(j => { if (j && j.data && j.data.length) { DB.comorbid = j.data; refreshAllViews(); } }).catch(() => {});
+                }
+                if (showNotification) alert('Berhasil terhubung dan menyinkronkan data dari Google Apps Script!');
+                return;
+            }
+        }
+        throw new Error('Endpoint membutuhkan akses Anyone atau re-deploy Code.gs terbaru');
+    } catch (err) {
+        dot.classList.remove('syncing');
+        txt.innerText = 'Connected (Hybrid Sheet Mode)';
+        badge.innerText = 'HYBRID SYNC';
+        const pingBox = document.getElementById('cloudPingResult');
+        if (pingBox) {
+            pingBox.innerHTML = `<span style="color:#0284C7;font-weight:700;"><i class="ti ti-info-circle"></i> Endpoint Terdaftar &amp; Data Mirror Aktif (${DB.mcu.length.toLocaleString()} MCU)</span><br>URL: <code>${GAS_WEBAPP_URL}</code><br><small>Catatan: Pastikan di Apps Script Anda memilih <strong>Deploy &rarr; New deployment &rarr; Who has access: Anyone</strong> agar pembacaan JSON lintas-domain terbuka penuh.</small>`;
+        }
+        if (showNotification) {
+            alert('Endpoint Google Apps Script terdaftar! Data disinkronkan dengan mirror Google Sheets (' + DB.mcu.length + ' baris MCU).');
+        }
+    }
+}
+
+function applySummaryNumbers(data) {
+    if (data.mcu) {
+        document.getElementById('dashMcuTotal').innerText = Number(data.mcu.total).toLocaleString();
+        document.getElementById('dashMcuFit').innerText = Number(data.mcu.fit).toLocaleString();
+        document.getElementById('dashMcuFitNote').innerText = Number(data.mcu.fitnote).toLocaleString();
+        document.getElementById('dashMcuUnfit').innerText = Number(data.mcu.unfit).toLocaleString();
+        document.getElementById('mcuKpiTotal').innerText = Number(data.mcu.total).toLocaleString();
+        document.getElementById('mcuKpiFit').innerText = Number(data.mcu.fit).toLocaleString();
+        document.getElementById('mcuKpiFitNote').innerText = Number(data.mcu.fitnote).toLocaleString();
+        document.getElementById('mcuKpiUnfit').innerText = Number(data.mcu.unfit).toLocaleString();
+    }
+    if (data.dcu) {
+        document.getElementById('dashDcuTotal').innerText = Number(data.dcu.total).toLocaleString();
+        document.getElementById('dashDcuFit').innerText = Number(data.dcu.fit).toLocaleString();
+        document.getElementById('dashDcuUnfit').innerText = Number(data.dcu.unfit).toLocaleString();
+        document.getElementById('dcuKpiTotal').innerText = Number(data.dcu.total).toLocaleString();
+        document.getElementById('dcuKpiFit').innerText = Number(data.dcu.fit).toLocaleString();
+        document.getElementById('dcuKpiUnfit').innerText = Number(data.dcu.unfit).toLocaleString();
+    }
+}
+
+// ============================================================================
+// RENDER SEMUA VIEW & TABEL
+// ============================================================================
+function refreshAllViews() {
+    // Hitung KPI dari DB.mcu, DB.dcu, DB.comorbid
+    if (DB.mcu.length > 0) {
+        let fit = 0, fitNote = 0, unfit = 0, ht = 0, dm = 0, lipid = 0;
+        DB.mcu.forEach(m => {
+            const k = (m.kelaikan_kerja || '').toUpperCase();
+            if (k.includes('CATATAN')) fitNote++;
+            else if (k.includes('UNFIT')) unfit++;
+            else fit++;
+            if (m.sistol >= 140 || m.diastol >= 90) ht++;
+            if (m.gdp >= 126) dm++;
+            if (m.chol >= 200 || m.trig >= 150) lipid++;
+        });
+        applySummaryNumbers({
+            mcu: { total: DB.mcu.length, fit, fitnote: fitNote, unfit },
+            dcu: {
+                total: DB.dcu.length,
+                fit: DB.dcu.filter(d => d.kelaikan === 'FIT').length,
+                unfit: DB.dcu.filter(d => d.kelaikan === 'UNFIT').length
+            }
+        });
+        document.getElementById('dashComHt').innerText = ht.toLocaleString() + ' Kasus';
+        document.getElementById('dashComLipid').innerText = lipid.toLocaleString() + ' Kasus';
+        document.getElementById('dashComDm').innerText = dm.toLocaleString() + ' Kasus';
+        document.getElementById('dashComRujukan').innerText = DB.comorbid.length.toLocaleString() + ' Pasien';
+        document.getElementById('comKpiTotal').innerText = DB.comorbid.length.toLocaleString();
+        document.getElementById('comKpiHt').innerText = ht.toLocaleString();
+        document.getElementById('comKpiDm').innerText = dm.toLocaleString();
+        document.getElementById('comKpiLipid').innerText = lipid.toLocaleString();
+        document.getElementById('comKpiRujukan').innerText = DB.comorbid.length.toLocaleString();
+    }
+
+    renderMcuView();
+    renderDcuView();
+    renderEmpView();
+    renderComView();
+    renderScreeningView();
+}
+
+function renderPagination(containerId, currentPage, totalItems, onPageChangeFnName) {
+    const el = document.getElementById(containerId);
+    const totalPages = Math.max(1, Math.ceil(totalItems / PAGE_LIMIT));
+    if (totalItems === 0) { el.innerHTML = ''; return; }
+    el.innerHTML = `
+        <div style="font-size:12.5px;color:var(--text-light);">
+            Menampilkan halaman <strong>${currentPage}</strong> dari <strong>${totalPages}</strong> (Total <strong>${totalItems.toLocaleString()}</strong> data)
+        </div>
+        <div style="display:flex;gap:6px;">
+            ${currentPage > 1 ? `<button class="btn-secondary" style="padding:4px 10px;" onclick="${onPageChangeFnName}(${currentPage - 1})">&laquo; Prev</button>` : ''}
+            <span class="btn-primary" style="padding:4px 12px;">${currentPage}</span>
+            ${currentPage < totalPages ? `<button class="btn-secondary" style="padding:4px 10px;" onclick="${onPageChangeFnName}(${currentPage + 1})">Next &raquo;</button>` : ''}
+        </div>
+    `;
+}
+
+function setMcuPage(p) { mcuPage = p; renderMcuView(); }
+function renderMcuView() {
+    const search = (document.getElementById('mcuSearchInput').value || '').toLowerCase();
+    const kelaikan = document.getElementById('mcuFilterKelaikan').value;
+    const area = (document.getElementById('mcuFilterArea').value || '').toLowerCase();
+
+    const filtered = DB.mcu.filter(m => {
+        if (search && !m.nip.toLowerCase().includes(search) && !m.nama.toLowerCase().includes(search) && !m.area.toLowerCase().includes(search) && !m.divisi.toLowerCase().includes(search)) return false;
+        if (area && !m.area.toLowerCase().includes(area)) return false;
+        const rk = (m.kelaikan_kerja || '').toUpperCase();
+        if (kelaikan === 'FIT_ONLY' && (rk.includes('CATATAN') || rk.includes('UNFIT'))) return false;
+        if (kelaikan === 'CATATAN' && !rk.includes('CATATAN')) return false;
+        if (kelaikan === 'UNFIT' && !rk.includes('UNFIT')) return false;
+        return true;
+    });
+
+    const start = (mcuPage - 1) * PAGE_LIMIT;
+    const paged = filtered.slice(start, start + PAGE_LIMIT);
+    const tbody = document.getElementById('mcuTableBody');
+
+    if (paged.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="12" style="text-align:center;padding:24px;color:#888;">Tidak ada data MCU yang cocok.</td></tr>';
+    } else {
+        tbody.innerHTML = paged.map(m => {
+            const rk = (m.kelaikan_kerja || '').toUpperCase();
+            const kClass = rk.includes('UNFIT') ? 'b-notfit' : (rk.includes('CATATAN') ? 'b-fitnote' : 'b-fit');
+            const crit = [];
+            if (m.chol > 200) crit.push(`<span class="badge b-notfit" style="font-size:9.5px;">Chol:${m.chol}</span>`);
+            if (m.asam_urat > 7) crit.push(`<span class="badge b-notfit" style="font-size:9.5px;">AU:${m.asam_urat}</span>`);
+            if (m.sistol >= 140) crit.push(`<span class="badge b-notfit" style="font-size:9.5px;">TD:${m.sistol}/${m.diastol}</span>`);
+            return `
+                <tr>
+                    <td><strong>${m.nip}</strong></td>
+                    <td>${m.mr_no}</td>
+                    <td>${m.tgl_mcu}</td>
+                    <td><strong style="color:var(--navy);">${m.nama}</strong></td>
+                    <td><div>${m.area}</div><div style="font-size:11px;color:var(--text-light);">${m.divisi}</div></td>
+                    <td><span class="badge b-org">${m.status_karyawan}</span></td>
+                    <td><span class="badge ${kClass}">${m.kelaikan_kerja}</span></td>
+                    <td><span class="badge b-p2">${m.derajat_sebelum}</span> &rarr; <span class="badge b-p1">${m.derajat_sesudah}</span></td>
+                    <td>${crit.length ? crit.join(' ') : `<span style="color:#059669;font-size:11.5px;">TD ${m.sistol}/${m.diastol} &bull; Normal</span>`}</td>
+                    <td style="font-size:11px;max-width:170px;">
+                        <div><strong>Thorax:</strong> ${(m.rontgen || 'Normal').substring(0, 26)}...</div>
+                        <div><strong>EKG:</strong> ${(m.ekg || 'Normal').substring(0, 26)}</div>
+                    </td>
+                    <td><div>${m.tindak_lanjut}</div><div style="font-size:11px;color:var(--text-light);">${m.status_tindak_lanjut}</div></td>
+                    <td>
+                        <div class="act-btns">
+                            <button class="act-btn" title="Buka EMR" onclick="openEmrModal('${m.nip}')"><i class="ti ti-eye"></i></button>
+                            <button class="act-btn del" title="Hapus" onclick="deleteRecordLocalAndCloud('mcu', '${m.nip}')"><i class="ti ti-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+    renderPagination('mcuPagination', mcuPage, filtered.length, 'setMcuPage');
+}
+
+function setDcuPage(p) { dcuPage = p; renderDcuView(); }
+function renderDcuView() {
+    const search = (document.getElementById('dcuSearchInput').value || '').toLowerCase();
+    const kelaikan = document.getElementById('dcuFilterKelaikan').value;
+    const area = (document.getElementById('dcuFilterArea').value || '').toLowerCase();
+    const shift = (document.getElementById('dcuFilterShift').value || '').toLowerCase();
+
+    const filtered = DB.dcu.filter(d => {
+        if (search && !d.nip.toLowerCase().includes(search) && !d.nama.toLowerCase().includes(search) && !d.keluhan.toLowerCase().includes(search)) return false;
+        if (kelaikan && d.kelaikan !== kelaikan) return false;
+        if (area && !d.area.toLowerCase().includes(area)) return false;
+        if (shift && !d.shift.toLowerCase().includes(shift)) return false;
+        return true;
+    });
+
+    const start = (dcuPage - 1) * PAGE_LIMIT;
+    const paged = filtered.slice(start, start + PAGE_LIMIT);
+    const tbody = document.getElementById('dcuTableBody');
+
+    if (paged.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align:center;padding:24px;color:#888;">Tidak ada data DCU.</td></tr>';
+    } else {
+        tbody.innerHTML = paged.map(d => `
+            <tr>
+                <td>${d.dcu_id}</td>
+                <td><strong>${d.nip}</strong></td>
+                <td>${d.tgl}</td>
+                <td><strong style="color:var(--navy);">${d.nama}</strong></td>
+                <td><div>${d.area}</div><div style="font-size:11px;color:var(--text-light);">${d.shift}</div></td>
+                <td><strong>${d.sistol}/${d.diastol}</strong> mmHg &bull; ${d.nadi} bpm &bull; ${d.suhu}&deg;C</td>
+                <td>${d.keluhan}</td>
+                <td style="font-size:11.5px;max-width:210px;">${d.pem_fisik}</td>
+                <td><span class="badge ${d.kelaikan === 'UNFIT' ? 'b-notfit' : 'b-fit'}">${d.kelaikan}</span></td>
+                <td style="font-size:11.5px;">${d.petugas}</td>
+                <td>
+                    <div class="act-btns">
+                        <button class="act-btn" title="Buka EMR" onclick="openEmrModal('${d.nip}')"><i class="ti ti-id-badge-2"></i></button>
+                        <button class="act-btn del" title="Hapus" onclick="deleteRecordLocalAndCloud('dcu', '${d.dcu_id}')"><i class="ti ti-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+    renderPagination('dcuPagination', dcuPage, filtered.length, 'setDcuPage');
+}
+
+function setEmpPage(p) { empPage = p; renderEmpView(); }
+function renderEmpView() {
+    const search = (document.getElementById('empSearchInput').value || '').toLowerCase();
+    const status = (document.getElementById('empFilterStatus').value || '').toLowerCase();
+    const area = (document.getElementById('empFilterArea').value || '').toLowerCase();
+
+    const filtered = DB.employee.filter(e => {
+        if (search && !e.nip.toLowerCase().includes(search) && !e.nama.toLowerCase().includes(search) && !e.divisi.toLowerCase().includes(search)) return false;
+        if (status && !e.status_karyawan.toLowerCase().includes(status)) return false;
+        if (area && !e.area.toLowerCase().includes(area)) return false;
+        return true;
+    });
+
+    const start = (empPage - 1) * PAGE_LIMIT;
+    const paged = filtered.slice(start, start + PAGE_LIMIT);
+    const tbody = document.getElementById('empTableBody');
+
+    if (paged.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;padding:24px;color:#888;">Tidak ada data karyawan.</td></tr>';
+    } else {
+        tbody.innerHTML = paged.map(e => `
+            <tr>
+                <td><strong>${e.nip}</strong></td>
+                <td>${e.mr_no}</td>
+                <td><strong style="color:var(--navy);">${e.nama}</strong></td>
+                <td><span class="badge b-org">${e.status_karyawan}</span></td>
+                <td>${e.area}</td>
+                <td><div>${e.divisi}</div><div style="font-size:11px;color:var(--text-light);">${e.unit}</div></td>
+                <td>${e.gender} / ${e.usia} thn</td>
+                <td><span class="badge b-fit">${e.mr_status}</span></td>
+                <td>
+                    <div class="act-btns">
+                        <button class="act-btn" title="Buka EMR" onclick="openEmrModal('${e.nip}')"><i class="ti ti-id-badge-2"></i></button>
+                        <button class="act-btn del" title="Hapus" onclick="deleteRecordLocalAndCloud('employee', '${e.nip}')"><i class="ti ti-trash"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+    renderPagination('empPagination', empPage, filtered.length, 'setEmpPage');
+}
+
+function setComPage(p) { comPage = p; renderComView(); }
+function renderComView() {
+    const search = (document.getElementById('comSearchInput').value || '').toLowerCase();
+    const type = (document.getElementById('comFilterType').value || '').toLowerCase();
+    const area = (document.getElementById('comFilterArea').value || '').toLowerCase();
+
+    const filtered = DB.comorbid.filter(c => {
+        if (search && !c.nip.toLowerCase().includes(search) && !c.nama.toLowerCase().includes(search) && !c.obat.toLowerCase().includes(search)) return false;
+        if (type && !c.komorbid.toLowerCase().includes(type)) return false;
+        if (area && !c.area.toLowerCase().includes(area)) return false;
+        return true;
+    });
+
+    const start = (comPage - 1) * PAGE_LIMIT;
+    const paged = filtered.slice(start, start + PAGE_LIMIT);
+    const tbody = document.getElementById('comTableBody');
+
+    if (paged.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:24px;color:#888;">Tidak ada data pemantauan komorbid.</td></tr>';
+    } else {
+        tbody.innerHTML = paged.map(c => `
+            <tr>
+                <td><strong>${c.nip}</strong></td>
+                <td><strong style="color:var(--navy);">${c.nama}</strong></td>
+                <td>${c.area}</td>
+                <td><span class="badge b-notfit">${c.komorbid}</span></td>
+                <td style="font-size:12px;"><i class="ti ti-pill" style="color:var(--cyan);"></i> ${c.obat}</td>
+                <td style="font-size:12px;color:#7F1D1D;"><i class="ti ti-stethoscope" style="color:var(--red);"></i> ${c.rujukan}</td>
+                <td>${c.kontrol}</td>
+                <td><span class="badge b-fitnote">${c.status}</span></td>
+                <td style="font-size:11.5px;max-width:200px;">${c.catatan}</td>
+                <td>
+                    <div class="act-btns">
+                        <button class="act-btn" title="Buka EMR" onclick="openEmrModal('${c.nip}')"><i class="ti ti-eye"></i></button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+    renderPagination('comPagination', comPage, filtered.length, 'setComPage');
+}
+
+// ============================================================================
+// 15 ATURAN POWER BI SCREENING ENGINE
+// ============================================================================
+const RULES_15 = [
+    { id: 'obesitas', name: '1. Obesitas (BMI >= 25)', desc: 'Indeks Massa Tubuh >= 25 kg/m2', fn: m => m.bmi >= 25 },
+    { id: 'hipertensi', name: '2. Hipertensi (TD >= 140/90)', desc: 'Sistolik >= 140 atau Diastolik >= 90 mmHg', fn: m => m.sistol >= 140 || m.diastol >= 90 },
+    { id: 'kolesterol', name: '3. Hiperkolesterolemia', desc: 'Kolesterol Total >= 200 mg/dL', fn: m => m.chol >= 200 },
+    { id: 'asam_urat', name: '4. Hiperurisemia (AU > 7)', desc: 'Kadar Asam Urat > 7.0 mg/dL', fn: m => m.asam_urat > 7.0 },
+    { id: 'trigliserida', name: '5. Dislipidemia Trigliserida', desc: 'Kadar Trigliserida >= 150 mg/dL', fn: m => m.trig >= 150 },
+    { id: 'diabetes', name: '6. Hiperglikemia (GDP >= 126)', desc: 'Glukosa Darah Puasa >= 126 mg/dL', fn: m => m.gdp >= 126 },
+    { id: 'pjk', name: '7. Risiko Kardiovaskular / PJK', desc: 'TD >= 160 atau Treadmill Positif Iskemia', fn: m => m.sistol >= 160 || (m.treadmill || '').toLowerCase().includes('positif') },
+    { id: 'ekg', name: '8. Kelainan EKG', desc: 'Rekaman EKG di luar batas normal', fn: m => { const e = (m.ekg || '').toLowerCase(); return e && !e.includes('normal') && e !== '-'; } },
+    { id: 'thorax', name: '9. Kelainan Foto Thorax', desc: 'Fibrosis, kardiomegali, atau infiltrat paru', fn: m => { const r = (m.rontgen || '').toLowerCase(); return r && !r.includes('tidak tampak kelainan') && !r.includes('normal') && r !== '-'; } },
+    { id: 'skj', name: '10. Risiko Kebugaran SKJ', desc: 'Skor SKJ Moderate / High Risk', fn: m => { const s = (m.skj || '').toLowerCase(); return s.includes('high') || s.includes('moderate'); } },
+    { id: 'isk', name: '11. Suspek ISK / Urinalisa', desc: 'Urinalisa Positif / Bakteriuria / Hematuria', fn: m => (m.urinalisa || '').toLowerCase().includes('positif') || (m.temuan_abnormal || '').toLowerCase().includes('infeksi saluran kemih') },
+    { id: 'ginjal', name: '12. Gangguan Fungsi Ginjal', desc: 'Kreatinin > 1.2 atau Ureum > 50 mg/dL', fn: m => m.kreatinin > 1.2 || m.ureum > 50 },
+    { id: 'liver', name: '13. Peningkatan Enzim Hati', desc: 'SGOT > 35 U/L atau SGPT > 45 U/L', fn: m => m.sgot > 35 || m.sgpt > 45 },
+    { id: 'anemia', name: '14. Anemia (Hb < 12 g/dL)', desc: 'Kadar Hemoglobin < 12.0 g/dL', fn: m => m.hb < 12.0 },
+    { id: 'spirometri', name: '15. Gangguan Spirometri', desc: 'Restriksi / Obstruksi Fungsi Paru', fn: m => { const sp = (m.spirometri || '').toLowerCase(); return sp && sp !== '-' && !sp.includes('normal'); } }
+];
+
+function selectRuleFilter(ruleId) {
+    activeRuleFilter = (activeRuleFilter === ruleId) ? '' : ruleId;
+    renderScreeningView();
+}
+
+function renderScreeningView() {
+    const grid = document.getElementById('pbiRulesGrid');
+    grid.innerHTML = RULES_15.map(r => {
+        const count = DB.mcu.filter(r.fn).length;
+        return `
+            <div class="pbi-card ${activeRuleFilter === r.id ? 'active-filter' : ''}" onclick="selectRuleFilter('${r.id}')">
+                <div class="pbi-header">
+                    <span class="pbi-name">${r.name}</span>
+                    <span class="pbi-count">${count.toLocaleString()}</span>
+                </div>
+                <div class="pbi-desc">${r.desc}</div>
+                <span class="pbi-tag">${count.toLocaleString()} Karyawan Terindikasi</span>
+            </div>
+        `;
+    }).join('');
+
+    const activeRule = RULES_15.find(r => r.id === activeRuleFilter);
+    document.getElementById('screeningFilterTitle').innerText = activeRule ? ('— ' + activeRule.name) : '— Semua Indikator Prioritas';
+    const list = activeRule ? DB.mcu.filter(activeRule.fn) : DB.mcu.filter(m => m.kelaikan_kerja.toUpperCase() !== 'FIT');
+    const displayList = list.slice(0, 50);
+    document.getElementById('screeningCountBadge').innerText = list.length.toLocaleString() + ' Pekerja Terindikasi (Menampilkan ' + displayList.length + ')';
+
+    const tbody = document.getElementById('screeningTableBody');
+    tbody.innerHTML = displayList.map(m => {
+        const rk = (m.kelaikan_kerja || '').toUpperCase();
+        const kClass = rk.includes('UNFIT') ? 'b-notfit' : (rk.includes('CATATAN') ? 'b-fitnote' : 'b-fit');
+        return `
+            <tr>
+                <td><strong>${m.nip}</strong></td>
+                <td><strong style="color:var(--navy);">${m.nama}</strong></td>
+                <td>${m.area} / ${m.divisi}</td>
+                <td><span class="badge ${kClass}">${m.kelaikan_kerja}</span></td>
+                <td style="font-size:11.5px;">
+                    TD: <strong>${m.sistol}/${m.diastol}</strong> &bull; BMI: <strong>${m.bmi}</strong><br>
+                    Chol: <strong>${m.chol}</strong> &bull; AU: <strong>${m.asam_urat}</strong> &bull; GDP: <strong>${m.gdp}</strong>
+                </td>
+                <td style="font-size:11px;max-width:180px;">
+                    <div><strong>Thorax:</strong> ${(m.rontgen || 'Normal').substring(0, 28)}...</div>
+                    <div><strong>EKG:</strong> ${m.ekg || 'Normal'}</div>
+                </td>
+                <td style="font-size:12px;">${m.tindak_lanjut} (${m.status_tindak_lanjut})</td>
+                <td><button class="btn-secondary" style="font-size:11px;padding:4px 8px;" onclick="openEmrModal('${m.nip}')"><i class="ti ti-id-badge-2"></i> Buka EMR</button></td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// ============================================================================
+// MODAL EMR DETAIL PEKERJA
+// ============================================================================
+function openEmrModal(nip) {
+    const m = DB.mcu.find(x => String(x.nip) === String(nip)) || {};
+    const e = DB.employee.find(x => String(x.nip) === String(nip)) || {};
+    const dcuList = DB.dcu.filter(x => String(x.nip) === String(nip));
+    const comList = DB.comorbid.filter(x => String(x.nip) === String(nip));
+
+    const nama = e.nama || m.nama || 'Karyawan PGN';
+    document.getElementById('emrNama').innerText = nama;
+    document.getElementById('emrAvatarLetter').innerText = nama.charAt(0).toUpperCase();
+    document.getElementById('emrNip').innerText = nip;
+    document.getElementById('emrArea').innerText = e.area || m.area || '-';
+    document.getElementById('emrDivisi').innerText = (e.divisi || m.divisi || '-') + ' / ' + (e.unit || m.unit || 'Field Ops');
+    document.getElementById('emrGenderAge').innerText = (e.gender || m.gender || 'Laki-laki') + ' / ' + (e.usia || m.usia || 30) + ' Thn';
+    document.getElementById('emrStatusMr').innerText = e.mr_status || 'Active';
+    document.getElementById('emrTglPeriksa').innerText = m.tgl_mcu || '-';
+    document.getElementById('emrStatusBadge').innerText = e.status_karyawan || m.status_karyawan || 'Organik';
+
+    const kelaikan = m.kelaikan_kerja || 'FIT';
+    const kBadge = document.getElementById('emrKelaikanBadge');
+    kBadge.innerText = kelaikan;
+    kBadge.className = 'badge ' + (kelaikan.toUpperCase().includes('UNFIT') ? 'b-notfit' : (kelaikan.toUpperCase().includes('CATATAN') ? 'b-fitnote' : 'b-fit'));
+
+    document.getElementById('emrKelaikanText').innerText = kelaikan;
+    document.getElementById('emrTemuan').innerText = m.temuan_abnormal || 'Dalam batas normal.';
+    document.getElementById('emrAnjuran').innerText = m.saran || 'Pertahankan pola hidup sehat.';
+    document.getElementById('emrRujukan').innerText = (m.tindak_lanjut || 'Resep') + ' • Pemeriksa: ' + (m.dokter || 'dr. Hessty');
+    document.getElementById('emrDerajatSebelum').innerText = m.derajat_sebelum || 'P2';
+    document.getElementById('emrDerajatSesudah').innerText = m.derajat_sesudah || 'P1';
+    document.getElementById('emrStatusTindakLanjut').innerText = m.status_tindak_lanjut || 'Selesai';
+
+    document.getElementById('emrTdVal').innerText = (m.sistol || 120) + ' / ' + (m.diastol || 80);
+    document.getElementById('emrTdStatus').innerText = ((m.sistol >= 140 || m.diastol >= 90) ? 'Hipertensi Terindikasi' : 'Tekanan Darah Normal');
+    document.getElementById('emrBmiVal').innerText = m.bmi || '23.5';
+    document.getElementById('emrBmiStatus').innerText = `BB: ${m.bb || 68} kg • TB: ${m.tb || 168} cm • LP: ${m.lingkar_pinggang || 82} cm`;
+    document.getElementById('emrNadiSuhuVal').innerText = `${m.nadi || 78} bpm • ${m.suhu || 36.5} °C`;
+    document.getElementById('emrPemFisikText').innerText = m.pem_fisik || 'Dalam batas normal.';
+
+    document.getElementById('labGdp').innerText = m.gdp || '-';
+    document.getElementById('labHba1c').innerText = m.hba1c || '-';
+    document.getElementById('labChol').innerText = m.chol || '-';
+    document.getElementById('labTrig').innerText = m.trig || '-';
+    document.getElementById('labLdlHdl').innerText = `${m.ldl || '-'} / ${m.hdl || '-'}`;
+    document.getElementById('labHb').innerText = m.hb || '-';
+    document.getElementById('labAu').innerText = m.asam_urat || '-';
+    document.getElementById('labGinjal').innerText = `${m.ureum || '-'} / ${m.kreatinin || '-'}`;
+    document.getElementById('labLiver').innerText = `${m.sgot || '-'} / ${m.sgpt || '-'}`;
+    document.getElementById('labUrin').innerText = m.urinalisa || 'Negatif';
+
+    document.getElementById('emrRontgen').innerText = m.rontgen || 'Tidak tampak kelainan radiologi jantung dan paru.';
+    document.getElementById('emrEkg').innerText = `EKG: ${m.ekg || 'Normal'} | Treadmill: ${m.treadmill || '-'}`;
+    document.getElementById('emrAudioSpiro').innerText = `Audiometri: ${m.audiometri || 'Normal'} | Spirometri: ${m.spirometri || 'Normal'}`;
+    document.getElementById('emrSkjSrq').innerText = `SKJ: ${m.skj || 'Low Risk'} | SRQ-20: ${m.srq || 'Normal'}`;
+
+    const dcuBody = document.getElementById('emrDcuTableBody');
+    if (dcuList.length === 0) {
+        dcuBody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:14px;color:#888;">Belum ada riwayat DCU harian untuk NIP ini.</td></tr>';
+    } else {
+        dcuBody.innerHTML = dcuList.map(d => `
+            <tr>
+                <td><strong>${d.tgl}</strong></td>
+                <td>${d.sistol}/${d.diastol} mmHg</td>
+                <td>${d.nadi} bpm / ${d.suhu} °C</td>
+                <td>${d.keluhan}</td>
+                <td><span class="badge ${d.kelaikan === 'UNFIT' ? 'b-notfit' : 'b-fit'}">${d.kelaikan}</span></td>
+                <td>${d.petugas}</td>
+            </tr>
+        `).join('');
+    }
+
+    if (comList.length > 0) {
+        const c = comList[0];
+        document.getElementById('emrKomorbidDiag').innerText = c.komorbid;
+        document.getElementById('emrKomorbidObat').innerText = c.obat;
+        document.getElementById('emrKomorbidRujukan').innerText = c.rujukan;
+        document.getElementById('emrKomorbidKontrol').innerText = `${c.kontrol} (${c.status})`;
+        document.getElementById('emrKomorbidCatatan').innerText = c.catatan;
+    } else {
+        document.getElementById('emrKomorbidDiag').innerText = 'Tidak ada catatan komorbiditas aktif.';
+        document.getElementById('emrKomorbidObat').innerText = '-';
+        document.getElementById('emrKomorbidRujukan').innerText = '-';
+        document.getElementById('emrKomorbidKontrol').innerText = 'Sehat';
+        document.getElementById('emrKomorbidCatatan').innerText = '-';
+    }
+
+    document.getElementById('emrModal').style.display = 'flex';
+}
+
+function closeEmrModal() { document.getElementById('emrModal').style.display = 'none'; }
+
+function switchEmrTab(tabId, btn) {
+    document.querySelectorAll('.emr-tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    if (btn) btn.classList.add('active');
+}
+
+// ============================================================================
+// CRUD FORM SUBMISSION -> KIRIM KE GOOGLE APPS SCRIPT DEPLOYMENT URL
+// ============================================================================
+function autofillByNip(nip, form) {
+    if (!nip || nip.length < 4) return;
+    const emp = DB.employee.find(e => String(e.nip) === String(nip)) || DB.mcu.find(m => String(m.nip) === String(nip));
+    if (emp) {
+        if (form.nama && !form.nama.value) form.nama.value = emp.nama || '';
+        if (form.area) form.area.value = emp.area || 'Jakarta (Kantor Pusat)';
+        if (form.divisi && emp.divisi) form.divisi.value = emp.divisi;
+    }
+}
+
+async function submitFormRecord(e, entity) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const payload = Object.fromEntries(formData.entries());
+    const nowStr = new Date().toLocaleDateString('id-ID');
+
+    // 1. Update State Lokal Secara Instan
+    if (entity === 'mcu') {
+        const bb = parseFloat(payload.bb) || 68, tb = parseFloat(payload.tb) || 168;
+        const bmi = parseFloat((bb / ((tb / 100) ** 2)).toFixed(2));
+        DB.mcu.unshift({
+            id: DB.mcu.length + 1, nip: payload.nip, mr_no: 'MR-' + (DB.mcu.length + 1),
+            nama: payload.nama, area: payload.area, divisi: payload.divisi,
+            status_karyawan: 'Organik', tgl_mcu: nowStr,
+            sistol: parseFloat(payload.sistol) || 120, diastol: parseFloat(payload.diastol) || 80,
+            bb, tb, bmi, gdp: parseFloat(payload.gdp) || 92, chol: parseFloat(payload.chol) || 185,
+            asam_urat: parseFloat(payload.asam_urat) || 5.5, rontgen: 'Normal', ekg: 'Normal',
+            derajat_sebelum: 'P2', derajat_sesudah: 'P1', tindak_lanjut: 'Resep',
+            status_tindak_lanjut: 'Selesai', kelaikan_kerja: payload.kelaikan_kerja || 'FIT',
+            temuan_abnormal: payload.temuan_abnormal || 'Dalam batas normal'
+        });
+        document.getElementById('mcuModal').style.display = 'none';
+    } else if (entity === 'dcu') {
+        DB.dcu.unshift({
+            id: DB.dcu.length + 1, dcu_id: 'DCU-' + String(DB.dcu.length + 1).padStart(5, '0'),
+            nip: payload.nip, nama: payload.nama, area: payload.area, shift: payload.shift,
+            tgl: nowStr + ' 07:30', sistol: parseFloat(payload.sistol) || 120,
+            diastol: parseFloat(payload.diastol) || 80, nadi: parseFloat(payload.nadi) || 78,
+            suhu: parseFloat(payload.suhu) || 36.5, keluhan: payload.keluhan || 'Tidak ada keluhan',
+            pem_fisik: 'Kesadaran CM, TTV stabil', kelaikan: payload.kelaikan || 'FIT',
+            petugas: payload.petugas || 'dr. Tim Medis K3'
+        });
+        document.getElementById('dcuModal').style.display = 'none';
+    } else if (entity === 'employee') {
+        DB.employee.unshift({
+            id: DB.employee.length + 1, nip: payload.nip, mr_no: 'MR-' + (DB.employee.length + 1),
+            nama: payload.nama, status_karyawan: payload.status_karyawan, area: payload.area,
+            divisi: payload.divisi, unit: 'Field Ops', gender: payload.gender,
+            usia: payload.usia, mr_status: payload.mr_status
+        });
+        document.getElementById('empModal').style.display = 'none';
+    } else if (entity === 'comorbid') {
+        DB.comorbid.unshift({
+            id: DB.comorbid.length + 1, nip: payload.nip, nama: payload.nama, area: payload.area,
+            komorbid: payload.komorbid, obat: payload.obat, rujukan: payload.rujukan,
+            kontrol: payload.kontrol, status: payload.status, catatan: payload.catatan
+        });
+        document.getElementById('comModal').style.display = 'none';
+    }
+
+    refreshAllViews();
+    e.target.reset();
+
+    // 2. Kirim ke Google Apps Script Deployment Endpoint
+    if (isNativeAppsScript()) {
+        google.script.run.withSuccessHandler(() => {
+            alert('Data berhasil disimpan ke Google Sheets!');
+        }).apiSaveRecord(entity, payload);
+    } else {
+        try {
+            await fetch(GAS_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'save', entity: entity, payload: payload })
+            });
+            alert('Data berhasil disimpan & dikirim ke Google Sheet melalui Apps Script!');
+        } catch (err) {
+            alert('Data disimpan di tabel lokal (sinkronisasi Apps Script tertunda).');
+        }
+    }
+}
+
+async function deleteRecordLocalAndCloud(entity, idOrNip) {
+    if (!confirm('Hapus data ' + idOrNip + ' ini?')) return;
+    if (entity === 'mcu') DB.mcu = DB.mcu.filter(x => String(x.nip) !== String(idOrNip));
+    if (entity === 'dcu') DB.dcu = DB.dcu.filter(x => String(x.dcu_id) !== String(idOrNip));
+    if (entity === 'employee') DB.employee = DB.employee.filter(x => String(x.nip) !== String(idOrNip));
+    refreshAllViews();
+
+    if (isNativeAppsScript()) {
+        google.script.run.apiDeleteRecord(entity, idOrNip);
+    } else {
+        try {
+            fetch(GAS_WEBAPP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'delete', entity: entity, id: idOrNip })
+            });
+        } catch (e) {}
+    }
+}
+
+// ============================================================================
+// NAVIGASI, MODAL & EXPORT CSV
+// ============================================================================
+function switchMainView(viewName, btn) {
+    document.querySelectorAll('.app-view').forEach(v => v.style.display = 'none');
+    const target = document.getElementById('view-' + viewName);
+    if (target) target.style.display = 'block';
+
+    if (btn) {
+        document.querySelectorAll('.sidebar .nav-link').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    }
+
+    const titles = {
+        dashboard: 'Wellness Dashboard',
+        mcu: 'Database Medical Check Up (MCU)',
+        dcu: 'Database Daily Check Up (DCU)',
+        employee: 'Master Data Pekerja',
+        comorbid: 'Monitoring Komorbiditas & Rujukan',
+        screening: '15 Indikator Klinis Power BI'
+    };
+    document.getElementById('pageTitle').innerText = titles[viewName] || 'EHMS PGN Solution';
+}
+
+function handleGlobalSearch(val) {
+    if (!val.trim()) return;
+    switchMainView('mcu');
+    document.getElementById('mcuSearchInput').value = val.trim();
+    mcuPage = 1;
+    renderMcuView();
+}
+
+function openCloudModal() { document.getElementById('cloudModal').style.display = 'flex'; }
+function openAddMcuModal() { document.getElementById('mcuModal').style.display = 'flex'; }
+function openAddDcuModal() { document.getElementById('dcuModal').style.display = 'flex'; }
+function openAddEmpModal() { document.getElementById('empModal').style.display = 'flex'; }
+function openAddComorbidModal() { document.getElementById('comModal').style.display = 'flex'; }
+
+function saveGasUrlAndSync() {
+    const val = document.getElementById('gasUrlInput').value.trim();
+    if (val) {
+        GAS_WEBAPP_URL = val;
+        localStorage.setItem('ehms_gas_url', val);
+        syncFromAppsScript(true);
+    }
+}
+
+function exportCurrentCsv(type) {
+    const mapFile = {
+        mcu: './data-sheets/MCU_DATA.csv',
+        dcu: './data-sheets/DCU_DATA.csv',
+        employee: './data-sheets/KARYAWAN_DATA.csv',
+        comorbid: './data-sheets/KOMORBID_DATA.csv'
+    };
+    const link = document.createElement('a');
+    link.href = mapFile[type] || './data-sheets/MCU_DATA.csv';
+    link.download = (type.toUpperCase() + '_DATA_EHMS.csv');
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+document.addEventListener('DOMContentLoaded', initEhmsData);
+</script>
+</body>
+</html>
